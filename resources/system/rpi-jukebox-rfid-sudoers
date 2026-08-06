@@ -1,0 +1,1 @@
+%%CURRENT_USER%% ALL=(root) NOPASSWD: /usr/sbin/shutdown -h now, /usr/sbin/shutdown -r now, /sbin/shutdown -h now, /sbin/shutdown -r now

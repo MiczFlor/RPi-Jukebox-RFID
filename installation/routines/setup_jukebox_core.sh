@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 JUKEBOX_SERVICE_NAME="${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+JUKEBOX_SUDOERS_FILE="/etc/sudoers.d/rpi-jukebox-rfid"
 
 _jukebox_core_install_python_requirements() {
   print_lc "  Install Python requirements"
@@ -59,6 +60,24 @@ _jukebox_core_register_as_service() {
   systemctl --user enable jukebox-daemon.service
 }
 
+_jukebox_core_register_power_permissions() {
+  print_lc "  Register Jukebox shutdown permissions"
+  local sudoers_temp="${JUKEBOX_SUDOERS_FILE}.tmp"
+
+  sudo install \
+    -o root \
+    -g root \
+    -m 0440 \
+    "${INSTALLATION_PATH}/resources/system/rpi-jukebox-rfid-sudoers" \
+    "${sudoers_temp}"
+  sudo sed -i "s|%%CURRENT_USER%%|${CURRENT_USER}|g" "${sudoers_temp}"
+  if ! sudo visudo -cf "${sudoers_temp}"; then
+    sudo rm -f "${sudoers_temp}"
+    exit_on_error "ERROR: Invalid Jukebox sudoers configuration"
+  fi
+  sudo mv -f "${sudoers_temp}" "${JUKEBOX_SUDOERS_FILE}"
+}
+
 _jukebox_core_check() {
     print_verify_installation
 
@@ -79,8 +98,10 @@ _jukebox_core_check() {
     verify_files_chown "${CURRENT_USER}" "${CURRENT_USER_GROUP}" "${SETTINGS_PATH}/logger.yaml"
 
     verify_files_chown root root "${SYSTEMD_USR_PATH}/jukebox-daemon.service"
+    verify_files_chmod_chown 440 root root "${JUKEBOX_SUDOERS_FILE}"
 
     verify_file_contains_string "${INSTALLATION_PATH}" "${JUKEBOX_SERVICE_NAME}"
+    verify_file_contains_string "NOPASSWD" "${JUKEBOX_SUDOERS_FILE}"
 
     verify_service_enablement jukebox-daemon.service enabled --user
 }
@@ -89,6 +110,7 @@ _run_setup_jukebox_core() {
     _jukebox_core_install_python_requirements
     _jukebox_core_install_settings
     _jukebox_core_register_as_service
+    _jukebox_core_register_power_permissions
     _jukebox_core_check
 }
 

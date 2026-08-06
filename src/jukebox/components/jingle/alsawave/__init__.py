@@ -38,10 +38,14 @@ class AlsaWave:
                                    periodsize=period_size,
                                    device=device_name)
 
-            data = f.readframes(period_size)
-            while data:
-                device.write(data)
+            try:
                 data = f.readframes(period_size)
+                while data:
+                    device.write(data)
+                    data = f.readframes(period_size)
+            finally:
+                # PCM.close() drains pending playback; object destruction does not.
+                device.close()
 
     @plugin.tag
     def play(self, filename):
