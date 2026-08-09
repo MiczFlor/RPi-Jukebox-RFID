@@ -3,6 +3,10 @@ services:
     volumes:
       - ~/.config/pulse:/root/.config/pulse
 
+  spotify:
+    volumes:
+      - ~/.config/pulse:/home/spotify/.config/pulse
+
   jukebox:
     volumes:
       - ~/.config/pulse:/root/.config/pulse

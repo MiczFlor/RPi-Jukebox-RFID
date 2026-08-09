@@ -17,6 +17,27 @@ services:
       - ../shared/playlists:/root/.config/mpd/playlists
       - ./config/docker.mpd.conf:/root/.config/mpd/mpd.conf
 
+  spotify:
+    profiles:
+      - spotify
+    build:
+      args:
+        - UID=1000
+        - USER=spotify
+        - LIBRESPOT_SOURCE_REPOSITORY=${LIBRESPOT_SOURCE_REPOSITORY:-MiczFlor/RPi-Jukebox-RFID}
+        - LIBRESPOT_UPSTREAM_REPOSITORY=MiczFlor/RPi-Jukebox-RFID
+      context: ../
+      dockerfile: ./docker/Dockerfile.librespot
+    container_name: spotify
+    image: phoniebox/librespot
+    environment:
+      - PULSE_SERVER=tcp:host.docker.internal:4713
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    volumes:
+      - spotify-cache:/cache
+
   jukebox:
     build:
       args:
@@ -61,3 +82,6 @@ services:
     volumes:
       - ../src/webapp:/home/node/webapp
       - /home/node/webapp/node_modules
+
+volumes:
+  spotify-cache:

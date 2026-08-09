@@ -8,7 +8,14 @@ import {
 
 import AlbumListItem from './album-list-item';
 
-const AlbumList = ({ albums, musicFilter, view }) => {
+const AlbumList = ({
+  albums,
+  isManagementSelecting = false,
+  musicFilter,
+  onToggleSelected,
+  selectedUris = new Set(),
+  view,
+}) => {
   const { t } = useTranslation();
 
   if (albums?.length) {
@@ -17,6 +24,9 @@ const AlbumList = ({ albums, musicFilter, view }) => {
         {albums.map((entry, i) => (
           <AlbumListItem
             key={entry.content_uri || `${entry.provider}:${entry.albumartist}:${entry.album}:${i}`}
+            isManagementSelecting={isManagementSelecting}
+            isSelected={selectedUris.has(entry.content_uri)}
+            onToggleSelected={onToggleSelected}
             view={view}
             {...entry}
           />

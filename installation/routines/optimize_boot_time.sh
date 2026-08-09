@@ -4,7 +4,6 @@
 
 OPTIMIZE_DHCP_CONF="/etc/dhcpcd.conf"
 OPTIMIZE_BOOT_CMDLINE_OPTIONS="consoleblank=1 logo.nologo quiet loglevel=0 plymouth.enable=0 vt.global_cursor_default=0 plymouth.ignore-serial-consoles splash fastboot noatime nodiratime noram"
-OPTIMIZE_BOOT_CMDLINE_OPTIONS_IPV6="ipv6.disable=1"
 OPTIMIZE_DHCP_CONF_HEADER="## Jukebox DHCP Config"
 OPTIMIZE_BOOT_CONF_HEADER="## Jukebox Boot Config"
 
@@ -80,15 +79,6 @@ EOF
 
             fi
         fi
-    fi
-}
-
-# TODO: Allow both Enable and Disable
-# Disable ipv6 thoroughly on the system with kernel parameter
-_optimize_ipv6_arp() {
-    if [ "$DISABLE_IPv6" = true ] ; then
-        print_lc "  Disabling IPV6"
-        _add_options_to_cmdline "${OPTIMIZE_BOOT_CMDLINE_OPTIONS_IPV6}"
     fi
 }
 
@@ -187,9 +177,6 @@ _optimize_check() {
             log "  CHECK"
         fi
     fi
-    if [ "$DISABLE_IPv6" = true ] ; then
-        verify_file_contains_string_once "${OPTIMIZE_BOOT_CMDLINE_OPTIONS_IPV6}" "${cmdlineFile}"
-    fi
     if [ "$DISABLE_BOOT_SCREEN" = true ] ; then
         verify_file_contains_string_once "${OPTIMIZE_BOOT_CONF_HEADER}" "${configFile}"
     fi
@@ -209,7 +196,6 @@ _run_optimize_boot_time() {
     _optimize_handle_bluetooth
     _optimize_static_ip
     _optimize_static_ip_NetworkManager
-    _optimize_ipv6_arp
     _optimize_check
 }
 

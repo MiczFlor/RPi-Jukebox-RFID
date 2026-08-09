@@ -2,7 +2,8 @@
 
 **This is where we are in a nutshell:** Playing music from local folders via RFID trigger. We also built a new WebUI to control the Jukebox from a browser.
 
-There are a few things that are specifically not integrated yet: playing streams, podcasts, or Spotify.
+There are a few things that are specifically not integrated yet, including
+playing streams and podcasts.
 
 In the following is the currently implemented feature list in more detail. It also shows some of the shortcomings. However, the list is _not complete in terms of planned features_, but probably _reflects more of where work is currently being put into_.
 
@@ -193,7 +194,10 @@ Topics marked _in progress_ are already in the process of implementation by comm
 
 ### Spotify
 
-- [ ] Everything
+- [x] Spotify Connect audio rendering through librespot
+- [x] Web API authentication and playback control
+- [x] Account and curated Spotify content in the Web App library
+- [x] RFID assignment through the existing player commands
 
 ### Others
 

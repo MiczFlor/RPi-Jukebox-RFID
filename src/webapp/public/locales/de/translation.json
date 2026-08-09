@@ -141,7 +141,8 @@
       "tracks": "Titel"
     },
     "sources": {
-      "mpd": "Lokal"
+      "mpd": "Lokal",
+      "spotify": "Spotify"
     },
     "overview": {
       "group": "{{source}}: {{view}}",
@@ -213,10 +214,34 @@
         }
       }
     },
+    "spotify": {
+      "manager": {
+        "actions-label": "Aktionen für die kuratierte Spotify-Bibliothek",
+        "add": "Link hinzufügen",
+        "select": "Auswählen",
+        "select-item": "{{name}} auswählen",
+        "delete-selected_one": "{{count}} Element entfernen",
+        "delete-selected_other": "{{count}} Elemente entfernen",
+        "add-dialog": {
+          "title": "Spotify-Inhalt hinzufügen",
+          "link": "Spotify-Link",
+          "confirm": "Hinzufügen"
+        },
+        "delete": {
+          "title_one": "{{count}} Element entfernen?",
+          "title_other": "{{count}} Elemente entfernen?",
+          "description": "Die Auswahl wird nur aus der kuratierten Phoniebox-Bibliothek entfernt. Spotify-Inhalte werden nicht gelöscht."
+        }
+      }
+    },
     "albums": {
       "unknown-album": "Unbekanntes Album",
       "unknown-artist": "Unbekannter Künstler",
       "unknown-title": "Unbekannter Titel",
+      "spotify-album": "Spotify-Album",
+      "spotify-playlist": "Spotify-Playlist",
+      "spotify-collection": "Spotify-Sammlung",
+      "spotify-track": "Spotify-Titel",
       "no-music": "Keine Musik vorhanden!",
       "empty-library": "Deine Bibliothek ist noch leer!",
       "no-songs-in-album": "Komisch, in diesem Album gibt es keine Songs.",
@@ -293,6 +318,28 @@
       "title": "Allgmeine Einstellungen",
       "show_covers": {
         "title": "Cover anzeigen"
+      }
+    },
+    "spotify": {
+      "title": "Spotify",
+      "status": "Konto",
+      "device": "Spotify-Connect-Gerät",
+      "redirect-uri": "OAuth-Weiterleitungs-URI",
+      "connect": "Verbinden",
+      "disconnect": "Trennen",
+      "refresh": "Spotify-Status aktualisieren",
+      "popup-blocked": "Pop-ups müssen für die Spotify-Verbindung erlaubt sein.",
+      "states": {
+        "disabled": "Deaktiviert",
+        "not-configured": "Nicht konfiguriert",
+        "not-connected": "Nicht verbunden",
+        "connected": "Verbunden"
+      },
+      "library": {
+        "title": "Bibliothek",
+        "mode": "Spotify-Bibliotheksmodus",
+        "account": "Kontobibliothek",
+        "curated": "Kuratierte Bibliothek"
       }
     },
     "timers": {

@@ -1,0 +1,79 @@
+FROM debian:trixie-slim AS download
+
+ARG TARGETARCH
+ARG TARGETVARIANT
+ARG LIBRESPOT_BUILD_ID=303026bb-phoniebox1
+ARG LIBRESPOT_RELEASE_TAG=librespot-builds
+ARG LIBRESPOT_SOURCE_REPOSITORY=MiczFlor/RPi-Jukebox-RFID
+ARG LIBRESPOT_UPSTREAM_REPOSITORY=MiczFlor/RPi-Jukebox-RFID
+
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    wget \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY installation/librespot-checksums.sha256 /tmp/librespot-checksums.sha256
+
+RUN set -eu; \
+    case "${TARGETARCH}/${TARGETVARIANT}" in \
+      amd64/) librespot_arch=amd64 ;; \
+      arm64/) librespot_arch=arm64 ;; \
+      arm/v7) librespot_arch=armv7 ;; \
+      *) echo "No prebuilt librespot archive for ${TARGETARCH}/${TARGETVARIANT}" >&2; exit 1 ;; \
+    esac; \
+    archive_name="librespot-${LIBRESPOT_BUILD_ID}-linux-${librespot_arch}.tar.gz"; \
+    expected_checksum="$(awk -v name="${archive_name}" '$2 == name { print $1 }' /tmp/librespot-checksums.sha256)"; \
+    test -n "${expected_checksum}" || { echo "No committed checksum for ${archive_name}" >&2; exit 1; }; \
+    mkdir -p /tmp/librespot /opt/librespot; \
+    download_archive() { \
+      repository="$1"; \
+      url="https://github.com/${repository}/releases/download/${LIBRESPOT_RELEASE_TAG}/${archive_name}"; \
+      echo "Checking ${url}"; \
+      wget --quiet --spider "${url}" \
+        && wget --timeout=30 --tries=3 "${url}" -O "/tmp/librespot/${archive_name}" \
+        && echo "${expected_checksum}  /tmp/librespot/${archive_name}" | sha256sum --check --status; \
+    }; \
+    if ! download_archive "${LIBRESPOT_SOURCE_REPOSITORY}"; then \
+      rm -f "/tmp/librespot/${archive_name}"; \
+      if [ "${LIBRESPOT_SOURCE_REPOSITORY}" = "${LIBRESPOT_UPSTREAM_REPOSITORY}" ] \
+          || ! download_archive "${LIBRESPOT_UPSTREAM_REPOSITORY}"; then \
+        echo "No valid prebuilt librespot archive is available" >&2; \
+        exit 1; \
+      fi; \
+    fi; \
+    tar -xzf "/tmp/librespot/${archive_name}" -C /opt/librespot; \
+    test -x /opt/librespot/librespot; \
+    test -f /opt/librespot/LICENSE; \
+    rm -rf /tmp/librespot
+
+FROM debian:trixie-slim
+
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    libpulse0 \
+    libssl3t64 \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+ARG UID
+ARG USER
+RUN useradd -m -u "${UID}" "${USER}" \
+    && usermod -aG audio "${USER}" \
+    && mkdir /cache \
+    && chown "${USER}:${USER}" /cache
+
+COPY --from=download /opt/librespot/librespot /usr/local/bin/librespot
+COPY --from=download /opt/librespot/LICENSE /usr/share/doc/librespot/copyright
+
+USER ${USER}
+CMD ["librespot", \
+    "--name", "Phoniebox", \
+    "--backend", "pulseaudio", \
+    "--bitrate", "320", \
+    "--cache", "/cache", \
+    "--cache-size-limit", "1G", \
+    "--system-cache", "/cache", \
+    "--volume-ctrl", "fixed", \
+    "--enable-oauth", \
+    "--oauth-port", "0"]

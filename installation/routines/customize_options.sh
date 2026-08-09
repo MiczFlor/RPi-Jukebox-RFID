@@ -28,26 +28,6 @@ Set a static IP? [Y/n]"
   log "ENABLE_STATIC_IP=${ENABLE_STATIC_IP}"
 }
 
-_option_ipv6() {
-  # DISABLE_IPv6
-  clear_c
-  print_c "------------------------- IP V6 -------------------------
-
-IPv6 is only needed if you intend to use it.
-Otherwise it can be disabled.
-
-Do you want to disable IPv6? [Y/n]"
-  read -r response
-  case "$response" in
-    [nN][oO]|[nN])
-      DISABLE_IPv6=false
-      ;;
-    *)
-      ;;
-  esac
-  log "DISABLE_IPv6=${DISABLE_IPv6}"
-}
-
 _option_autohotspot() {
     # ENABLE_AUTOHOTSPOT
     clear_c
@@ -187,6 +167,87 @@ Would you like to overwrite your configuration? [Y/n]"
     if [ "$SETUP_MPD" == true ]; then
         log "ENABLE_MPD_OVERWRITE_INSTALL=${ENABLE_MPD_OVERWRITE_INSTALL}"
     fi
+}
+
+_option_spotify() {
+  clear_c
+
+  if [[ "$(get_architecture)" == "armv6" ]]; then
+    print_c "----------------------- SPOTIFY -------------------------
+
+Spotify is not yet supported on ARMv6 Raspberry Pi models.
+Spotify support will not be installed."
+    SETUP_SPOTIFY=false
+    log "SETUP_SPOTIFY=${SETUP_SPOTIFY}"
+    return
+  fi
+
+  print_c "----------------------- SPOTIFY -------------------------
+
+Spotify playback requires a Premium account and a Spotify
+developer app. Librespot will be installed as a user service.
+
+Would you like to install Spotify support? [y/N]"
+  read -r response
+  case "$response" in
+    [yY][eE][sS]|[yY])
+      SETUP_SPOTIFY=true
+      ;;
+    *)
+      SETUP_SPOTIFY=false
+      ;;
+  esac
+
+  if [[ "${SETUP_SPOTIFY}" == true ]]; then
+    if [[ -z "${SPOTIFY_REDIRECT_URI}" ]]; then
+      print_c "Spotify requires an exact OAuth redirect URI.
+Press Enter to use the recommended URI below. A custom LAN or
+public redirect URI normally requires HTTPS.
+
+Spotify OAuth redirect URI [${SPOTIFY_DEFAULT_REDIRECT_URI}]:"
+      read -r response
+      SPOTIFY_REDIRECT_URI="${response:-$SPOTIFY_DEFAULT_REDIRECT_URI}"
+    fi
+
+    print_c "Before continuing, create a Spotify developer app:
+
+1. Go to https://developer.spotify.com/dashboard
+2. Click 'Create app'.
+3. Enter an App name and App description, add this exact
+   Redirect URI, and select 'Web API':
+
+   ${SPOTIFY_REDIRECT_URI}
+
+4. Save the app.
+
+After creating the app, copy the Client ID from its
+Basic Information page and enter it below."
+    while [[ -z "${SPOTIFY_CLIENT_ID}" ]]; do
+      print_c "Spotify developer app client ID:"
+      read -r SPOTIFY_CLIENT_ID
+    done
+
+    if [[ "${SPOTIFY_REDIRECT_URI}" == "${SPOTIFY_DEFAULT_REDIRECT_URI}" ]]; then
+      print_c "After installation, run this command on the computer where
+you will open the Phoniebox Web App:
+
+ssh -L 3000:127.0.0.1:80 ${CURRENT_USER:-USER}@$(hostname).local
+
+Keep the SSH session open, browse to http://127.0.0.1:3000,
+then select Settings > Spotify > Connect."
+    fi
+
+    print_c "Spotify Connect device name [${SPOTIFY_DEVICE_NAME}]:"
+    read -r response
+    response="${response:-$SPOTIFY_DEVICE_NAME}"
+    if [[ ! "${response}" =~ ^[A-Za-z0-9._\ -]+$ ]]; then
+      print_c "Invalid device name. Using '${SPOTIFY_DEVICE_NAME}'."
+    else
+      SPOTIFY_DEVICE_NAME="${response}"
+    fi
+  fi
+
+  log "SETUP_SPOTIFY=${SETUP_SPOTIFY}"
 }
 
 _option_rfid_reader() {
@@ -354,12 +415,12 @@ _configure_webapp_bundle_download() {
 }
 
 _run_customize_options() {
-  _option_ipv6
   _option_static_ip
   _option_autohotspot
   _option_bluetooth
   _option_disable_onboard_audio
   _option_mpd
+  _option_spotify
   _option_rfid_reader
   _option_samba
   _option_webapp

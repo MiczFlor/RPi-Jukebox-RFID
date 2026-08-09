@@ -85,12 +85,15 @@ async function mockBackend(
     rpcGate,
     showCovers = false,
     streamingLibrary = false,
+    spotifyConnected = true,
+    spotifyLibrary = false,
     timerEvents = {},
   } = {},
 ) {
   const eventSockets = new Set();
   const libraryCalls = [];
   const rpcCalls = [];
+  let spotifyLibraryState = { mode: 'account', items: [] };
   const subscribedTopics = new Set();
 
   await page.addInitScript(() => {
@@ -104,6 +107,81 @@ async function mockBackend(
       body: JSON.stringify({
         entries: rpcResults.get_folder_content,
       }),
+      contentType: 'application/json',
+      status: 200,
+    });
+  });
+
+  await page.route('**/api/v1/spotify', route => route.fulfill({
+    body: JSON.stringify({
+      configured: true,
+      connected: spotifyConnected,
+      device_name: 'Phoniebox',
+      enabled: true,
+      redirect_uri: 'https://box.example/api/v1/spotify/oauth/callback',
+    }),
+    contentType: 'application/json',
+    status: 200,
+  }));
+
+  await page.route('**/api/v1/spotify/oauth/start', route => {
+    const origin = new URL(route.request().url()).origin;
+    return route.fulfill({
+      body: JSON.stringify({
+        authorization_url: `${origin}/logo192.png#spotify-authorize`,
+      }),
+      contentType: 'application/json',
+      status: 200,
+    });
+  });
+
+  await page.route('**/api/v1/spotify/library', async route => {
+    const request = route.request();
+    if (request.method() === 'PUT') {
+      spotifyLibraryState = {
+        ...spotifyLibraryState,
+        mode: request.postDataJSON().mode,
+      };
+    }
+    await route.fulfill({
+      body: JSON.stringify(spotifyLibraryState),
+      contentType: 'application/json',
+      status: 200,
+    });
+  });
+
+  await page.route('**/api/v1/spotify/library/items', async route => {
+    const request = route.request();
+    if (request.method() === 'POST') {
+      const item = {
+        album: 'Quiet Time',
+        albumartist: 'Family',
+        content_type: 'playlist',
+        content_uri: 'spotify:playlist:quiet-time',
+        cover_url: null,
+        provider: 'spotify',
+      };
+      spotifyLibraryState = {
+        ...spotifyLibraryState,
+        items: [...spotifyLibraryState.items, item],
+      };
+      await route.fulfill({
+        body: JSON.stringify({ item }),
+        contentType: 'application/json',
+        status: 201,
+      });
+      return;
+    }
+    const { uri, uris } = request.postDataJSON();
+    const removedUris = new Set(uris || [uri]);
+    spotifyLibraryState = {
+      ...spotifyLibraryState,
+      items: spotifyLibraryState.items.filter(
+        item => !removedUris.has(item.content_uri),
+      ),
+    };
+    await route.fulfill({
+      body: JSON.stringify(spotifyLibraryState),
       contentType: 'application/json',
       status: 200,
     });
@@ -131,6 +209,16 @@ async function mockBackend(
     let result = rpcResults[key] ?? null;
     if (key === 'get_app_settings') {
       result = { show_covers: showCovers };
+    }
+    if (
+      key === 'list_songs_by_artist_and_album' &&
+      payload.kwargs.provider === 'spotify'
+    ) {
+      result = rpcResults.list_songs_by_artist_and_album.map(song => ({
+        ...song,
+        file: 'spotify:track:chapter-one',
+        provider: 'spotify',
+      }));
     }
     if (key === 'list_library_sources') {
       result = [
@@ -164,6 +252,30 @@ async function mockBackend(
             },
           ],
         }] : []),
+        {
+          id: 'spotify',
+          label: 'Spotify',
+          views: [
+            {
+              id: 'albums',
+              label: 'Albums',
+              kind: 'items',
+              content_types: ['album'],
+            },
+            {
+              id: 'playlists',
+              label: 'Playlists',
+              kind: 'items',
+              content_types: ['playlist'],
+            },
+            {
+              id: 'tracks',
+              label: 'Tracks',
+              kind: 'items',
+              content_types: ['track', 'collection'],
+            },
+          ],
+        },
       ];
     }
     if (key === 'list_library_items') {
@@ -182,7 +294,16 @@ async function mockBackend(
         content_uri: 'service:playlist:bedtime',
         provider: 'streaming',
       }] : [];
-      result = [...localItems, ...streamingItems].filter(item => (
+      const spotifyItems = spotifyLibraryState.mode === 'curated'
+        ? spotifyLibraryState.items
+        : (spotifyLibrary ? [{
+          albumartist: 'Family',
+          album: 'Bedtime Stories',
+          content_type: 'playlist',
+          content_uri: 'spotify:playlist:bedtime',
+          provider: 'spotify',
+        }] : []);
+      result = [...localItems, ...streamingItems, ...spotifyItems].filter(item => (
         (!payload.kwargs.provider || item.provider === payload.kwargs.provider) &&
         (
           !payload.kwargs.content_types ||
@@ -459,6 +580,82 @@ test('library playback preserves provider and content URI', async ({ page }) => 
     content_uri: 'service:playlist:bedtime',
     provider: 'streaming',
   });
+  expect(consoleErrors).toEqual([]);
+});
+
+test('Spotify library playback preserves provider and content URI', async ({ page }) => {
+  const consoleErrors = collectConsoleErrors(page);
+  const { rpcCalls } = await mockBackend(page, { spotifyLibrary: true });
+  await page.goto('/#/library/spotify/playlists');
+
+  await page.getByText('Bedtime Stories', { exact: true }).click();
+  await expect(page.getByText('Chapter One', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Play' }).click();
+
+  await expect.poll(() => (
+    rpcCalls.find(call => call.method === 'play_album')?.kwargs
+  )).toEqual({
+    album: 'Bedtime Stories',
+    albumartist: 'Family',
+    content_uri: 'spotify:playlist:bedtime',
+    provider: 'spotify',
+  });
+  expect(consoleErrors).toEqual([]);
+});
+
+test('Spotify account and device status render in settings', async ({ page }) => {
+  const consoleErrors = collectConsoleErrors(page);
+  await mockBackend(page);
+  await page.goto('/#/settings');
+
+  const spotifyTitle = page.getByText('Spotify', { exact: true });
+  await spotifyTitle.scrollIntoViewIfNeeded();
+  await expect(spotifyTitle).toBeVisible();
+  await expect(page.getByText('Connected', { exact: true })).toBeVisible();
+  await expect(page.getByText('Phoniebox', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Disconnect' })).toBeVisible();
+  await expectStableLayout(page);
+  expect(consoleErrors).toEqual([]);
+});
+
+test('Spotify library manages curated shared links', async ({ page }) => {
+  const consoleErrors = collectConsoleErrors(page);
+  await mockBackend(page);
+  await page.goto('/#/settings');
+
+  const curated = page.getByRole('button', { name: 'Curated library' });
+  await curated.scrollIntoViewIfNeeded();
+  await curated.click();
+
+  await page.getByRole('link', { name: 'Library' }).click();
+  await page.getByRole('tab', { name: 'Spotify' }).click();
+  await page.getByRole('button', { name: 'Add link' }).click();
+  await page.getByLabel('Spotify link').fill(
+    'https://open.spotify.com/playlist/4LyGZmj7LKOUECh4ZlNCML',
+  );
+  await page.getByRole('button', { name: 'Add', exact: true }).click();
+
+  await expect(page).toHaveURL(/#\/library\/spotify\/playlists$/);
+  await expect(page.getByText('Quiet Time', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Select', exact: true }).click();
+  await page.getByRole('checkbox', { name: 'Select Quiet Time' }).click();
+  await page.getByRole('button', { name: 'Remove 1 item' }).click();
+  await page.getByRole('button', { name: 'Delete', exact: true }).click();
+  await expect(page.getByText('Your library is empty!')).toBeVisible();
+  expect(consoleErrors).toEqual([]);
+});
+
+test('Spotify authorization opens before fetching the redirect URL', async ({ page }) => {
+  const consoleErrors = collectConsoleErrors(page);
+  await mockBackend(page, { spotifyConnected: false });
+  await page.goto('/#/settings');
+
+  const popupPromise = page.waitForEvent('popup');
+  await page.getByRole('button', { name: 'Connect' }).click();
+  const popup = await popupPromise;
+
+  await expect(popup).toHaveURL(/logo192\.png#spotify-authorize$/);
+  await popup.close();
   expect(consoleErrors).toEqual([]);
 });
 

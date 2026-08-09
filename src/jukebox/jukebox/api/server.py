@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import tornado.httpserver
 import tornado.ioloop
+import tornado.escape
 import tornado.web
 import tornado.websocket
 import zmq
@@ -120,6 +121,10 @@ class JsonErrorHandler(tornado.web.RequestHandler):
     def finish_library_error(self, error):
         self.set_status(error.status)
         self.finish({'error': {'code': error.code, 'message': error.message}})
+
+    def finish_service_error(self, error, default_status=502):
+        self.set_status(error.status or default_status)
+        self.finish({'error': {'code': error.code, 'message': str(error)}})
 
 
 @tornado.web.stream_request_body
@@ -381,6 +386,215 @@ class LibraryRefreshHandler(JsonErrorHandler):
         self.write({'update_id': update_id})
 
 
+class SpotifyStatusHandler(JsonErrorHandler):
+    def initialize(self, spotify_service):
+        self.spotify_service = spotify_service
+
+    def get(self):
+        if self.spotify_service is None:
+            self.write({
+                'enabled': False,
+                'configured': False,
+                'connected': False,
+                'redirect_uri': None,
+                'device_name': None,
+            })
+            return
+        self.write(self.spotify_service.status())
+
+    def delete(self):
+        if self.spotify_service is not None:
+            self.spotify_service.oauth.disconnect()
+        self.set_status(204)
+        self.finish()
+
+
+class SpotifyAuthorizationHandler(JsonErrorHandler):
+    def initialize(self, spotify_service):
+        self.spotify_service = spotify_service
+
+    def post(self):
+        from components.player.spotify import SpotifyError
+
+        if self.spotify_service is None:
+            self.finish_service_error(SpotifyError(
+                'The Spotify integration is not available.',
+                status=503,
+                code='spotify_not_available',
+            ))
+            return
+        try:
+            authorization_url = self.spotify_service.oauth.authorization_url()
+        except SpotifyError as error:
+            self.finish_service_error(error, default_status=400)
+            return
+        self.write({'authorization_url': authorization_url})
+
+
+@tornado.web.stream_request_body
+class SpotifyLibraryHandler(StreamingJsonHandler):
+    def initialize(self, spotify_service, executor):
+        self.spotify_service = spotify_service
+        self.executor = executor
+
+    def _library(self):
+        from components.player.spotify import SpotifyError
+
+        if self.spotify_service is None:
+            raise SpotifyError(
+                'The Spotify integration is not available.',
+                status=503,
+                code='spotify_not_available',
+            )
+        return self.spotify_service.library
+
+    def get(self):
+        from components.player.spotify import SpotifyError
+
+        try:
+            self.write(self._library().status())
+        except SpotifyError as error:
+            self.finish_service_error(error)
+
+    async def put(self):
+        from components.player.spotify import SpotifyError
+
+        if self.reject_oversized_body():
+            return
+        try:
+            mode = self.json_body().get('mode')
+            state = await tornado.ioloop.IOLoop.current().run_in_executor(
+                self.executor,
+                self._library().set_mode,
+                mode,
+            )
+        except LibraryError as error:
+            self.finish_library_error(error)
+            return
+        except SpotifyError as error:
+            self.finish_service_error(error, default_status=400)
+            return
+        self.write(state)
+
+
+@tornado.web.stream_request_body
+class SpotifyLibraryItemsHandler(SpotifyLibraryHandler):
+    async def post(self):
+        from components.player.spotify import SpotifyError
+
+        if self.reject_oversized_body():
+            return
+        try:
+            link = self.json_body().get('link')
+            item = await tornado.ioloop.IOLoop.current().run_in_executor(
+                self.executor,
+                self._library().add,
+                link,
+            )
+        except LibraryError as error:
+            self.finish_library_error(error)
+            return
+        except SpotifyError as error:
+            self.finish_service_error(error, default_status=400)
+            return
+        self.set_status(201)
+        self.write({'item': item})
+
+    async def delete(self):
+        from components.player.spotify import SpotifyError
+
+        if self.reject_oversized_body():
+            return
+        try:
+            body = self.json_body()
+            content_uris = body.get('uris')
+            remove = (
+                self._library().remove_many
+                if content_uris is not None
+                else self._library().remove
+            )
+            remove_value = (
+                content_uris
+                if content_uris is not None
+                else body.get('uri')
+            )
+            state = await tornado.ioloop.IOLoop.current().run_in_executor(
+                self.executor,
+                remove,
+                remove_value,
+            )
+        except LibraryError as error:
+            self.finish_library_error(error)
+            return
+        except SpotifyError as error:
+            self.finish_service_error(error, default_status=400)
+            return
+        self.write(state)
+
+
+class SpotifyCallbackHandler(tornado.web.RequestHandler):
+    def initialize(self, spotify_service, executor):
+        self.spotify_service = spotify_service
+
+        self.executor = executor
+
+    async def get(self):
+        from components.player.spotify import SpotifyError
+
+        error_description = self.get_query_argument('error_description', default=None)
+        oauth_error = self.get_query_argument('error', default=None)
+        if oauth_error:
+            self.set_status(400)
+            self.finish(self._page(
+                'Spotify connection failed',
+                error_description or oauth_error,
+            ))
+            return
+        if self.spotify_service is None:
+            self.set_status(503)
+            self.finish(self._page(
+                'Spotify connection failed',
+                'The Spotify integration is not available.',
+            ))
+            return
+        try:
+            code = self.get_query_argument('code')
+            state = self.get_query_argument('state')
+            await tornado.ioloop.IOLoop.current().run_in_executor(
+                self.executor,
+                self.spotify_service.oauth.complete,
+                code,
+                state,
+            )
+        except tornado.web.MissingArgumentError:
+            self.set_status(400)
+            self.finish(self._page(
+                'Spotify connection failed',
+                'The callback did not contain the required authorization values.',
+            ))
+            return
+        except SpotifyError as error:
+            self.set_status(error.status or 400)
+            self.finish(self._page('Spotify connection failed', str(error)))
+            return
+
+        self.finish(self._page(
+            'Spotify connected',
+            'Return to the Phoniebox web app. This window can be closed.',
+        ))
+
+    def _page(self, title, message):
+        self.set_header('Content-Type', 'text/html; charset=UTF-8')
+        return (
+            '<!doctype html><html><head><meta charset="utf-8">'
+            f'<title>{tornado.escape.xhtml_escape(title)}</title></head>'
+            '<body>'
+            f'<h1>{tornado.escape.xhtml_escape(title)}</h1>'
+            f'<p>{tornado.escape.xhtml_escape(message)}</p>'
+            '</body></html>'
+        )
+
+
 class EventsHandler(tornado.websocket.WebSocketHandler):
     def initialize(self, broker):
         self.broker = broker
@@ -425,11 +639,15 @@ def make_application(
     rpc_processor=process_request,
     library=None,
     library_executor=None,
+    spotify_service=None,
 ):
     if library is None:
         library = create_music_library()
     if library_executor is None:
         library_executor = executor
+    if spotify_service is None:
+        from components.player.spotify_plugin import get_spotify_service
+        spotify_service = get_spotify_service()
     return tornado.web.Application(
         [
             (r'/api/v1/health', HealthHandler),
@@ -450,6 +668,31 @@ def make_application(
                 r'/api/v1/library/refresh',
                 LibraryRefreshHandler,
                 {'library': library, 'executor': library_executor},
+            ),
+            (
+                r'/api/v1/spotify',
+                SpotifyStatusHandler,
+                {'spotify_service': spotify_service},
+            ),
+            (
+                r'/api/v1/spotify/oauth/start',
+                SpotifyAuthorizationHandler,
+                {'spotify_service': spotify_service},
+            ),
+            (
+                r'/api/v1/spotify/library',
+                SpotifyLibraryHandler,
+                {'spotify_service': spotify_service, 'executor': executor},
+            ),
+            (
+                r'/api/v1/spotify/library/items',
+                SpotifyLibraryItemsHandler,
+                {'spotify_service': spotify_service, 'executor': executor},
+            ),
+            (
+                r'/api/v1/spotify/oauth/callback',
+                SpotifyCallbackHandler,
+                {'spotify_service': spotify_service, 'executor': executor},
             ),
         ],
         rpc_executor=executor,

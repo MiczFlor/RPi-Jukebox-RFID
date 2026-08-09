@@ -71,11 +71,15 @@ class PlayerCoordinator:
         logger.info(f"Selected player backend '{name}'")
         return backend
 
-    def _content_backend_name(self, provider=None) -> str:
+    def _content_backend_name(self, provider=None, content_uri=None) -> str:
+        if isinstance(content_uri, str) and content_uri.startswith('spotify:'):
+            return provider or 'spotify'
         return provider or self._get_default_backend_name()
 
-    def _content_backend(self, provider=None) -> Any:
-        return self._select_backend(self._content_backend_name(provider))
+    def _content_backend(self, provider=None, content_uri=None) -> Any:
+        return self._select_backend(
+            self._content_backend_name(provider, content_uri)
+        )
 
     def _call_backend(self, backend: Any, method: str, *args, **kwargs):
         func = getattr(backend, method, None)
@@ -208,7 +212,7 @@ class PlayerCoordinator:
     @plugs.tag
     def play_single(self, song_url, provider=None):
         with self._lock:
-            backend = self._content_backend(provider)
+            backend = self._content_backend(provider, song_url)
             return self._call_backend(backend, 'play_single', song_url)
 
     @plugs.tag
@@ -232,7 +236,7 @@ class PlayerCoordinator:
     @plugs.tag
     def get_single_coverart(self, song_url, provider=None):
         return self._call_named(
-            self._content_backend_name(provider),
+            self._content_backend_name(provider, song_url),
             'get_single_coverart',
             song_url,
         )
@@ -244,7 +248,7 @@ class PlayerCoordinator:
             album: str,
             content_uri=None,
             provider=None):
-        backend_name = self._content_backend_name(provider)
+        backend_name = self._content_backend_name(provider, content_uri)
         args = (albumartist, album, content_uri) if content_uri else (albumartist, album)
         return self._call_named(backend_name, 'get_album_coverart', *args)
 
@@ -270,7 +274,7 @@ class PlayerCoordinator:
             content_uri=None,
             provider=None):
         with self._lock:
-            backend = self._content_backend(provider)
+            backend = self._content_backend(provider, content_uri)
             args = (albumartist, album, content_uri) if content_uri else (albumartist, album)
             return self._call_backend(backend, 'play_album', *args)
 
@@ -352,7 +356,7 @@ class PlayerCoordinator:
             album,
             content_uri=None,
             provider=None):
-        backend_name = self._content_backend_name(provider)
+        backend_name = self._content_backend_name(provider, content_uri)
         args = (albumartist, album, content_uri) if content_uri else (albumartist, album)
         return self._call_named(
             backend_name,
@@ -363,7 +367,7 @@ class PlayerCoordinator:
     @plugs.tag
     def get_song_by_url(self, song_url, provider=None):
         return self._call_named(
-            self._content_backend_name(provider),
+            self._content_backend_name(provider, song_url),
             'get_song_by_url',
             song_url,
         )

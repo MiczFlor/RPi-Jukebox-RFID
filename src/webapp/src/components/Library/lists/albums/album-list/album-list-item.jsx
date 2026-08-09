@@ -7,9 +7,11 @@ import { useTranslation } from 'react-i18next';
 
 import {
   Avatar,
+  Checkbox,
   ListItem,
   ListItemAvatar,
   ListItemButton,
+  ListItemIcon,
   ListItemText,
 } from '@mui/material';
 
@@ -21,9 +23,13 @@ import request from '../../../../../utils/request';
 const AlbumListItem = ({
   albumartist,
   album,
+  content_type,
   content_uri,
   cover_url,
   isButton = true,
+  isManagementSelecting = false,
+  isSelected = false,
+  onToggleSelected,
   provider = 'mpd',
   view = 'albums',
 }) => {
@@ -89,14 +95,53 @@ const AlbumListItem = ({
       }
       <ListItemText
         primary={album || t('library.albums.unknown-album')}
-        secondary={albumartist || null}
+        secondary={[
+          albumartist,
+          provider === 'spotify'
+            ? t(`library.albums.spotify-${content_type || 'album'}`)
+            : null,
+        ].filter(Boolean).join(' · ') || null}
       />
     </>
   );
 
   return (
-    <ListItem disablePadding={isButton} key={content_uri || album}>
-      {isButton
+    <ListItem
+      disablePadding={isButton || isManagementSelecting}
+      key={content_uri || album}
+    >
+      {isManagementSelecting
+        ? (
+          <ListItemButton
+            onClick={() => onToggleSelected({
+              album,
+              albumartist,
+              content_type,
+              content_uri,
+              cover_url,
+              provider,
+            })}
+            selected={isSelected}
+            sx={{ minHeight: 56 }}
+          >
+            <ListItemIcon sx={{ minWidth: 44 }}>
+              <Checkbox
+                checked={isSelected}
+                edge="start"
+                slotProps={{
+                  input: {
+                    'aria-label': t('library.spotify.manager.select-item', {
+                      name: album,
+                    }),
+                  },
+                }}
+                tabIndex={-1}
+              />
+            </ListItemIcon>
+            {content}
+          </ListItemButton>
+        )
+        : isButton
         ? (
           <ListItemButton component={AlbumLink} nativeButton={false}>
             {content}

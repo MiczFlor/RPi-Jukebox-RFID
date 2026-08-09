@@ -37,6 +37,72 @@ class FakeClient:
         return None
 
 
+class FakeSpotifyOAuth:
+    def __init__(self):
+        self.completed = []
+        self.disconnected = False
+
+    def authorization_url(self):
+        return 'https://accounts.spotify.test/authorize'
+
+    def complete(self, code, state):
+        self.completed.append((code, state))
+
+    def disconnect(self):
+        self.disconnected = True
+
+
+class FakeSpotifyService:
+    def __init__(self):
+        self.oauth = FakeSpotifyOAuth()
+        self.library = FakeSpotifyLibrary()
+
+    def status(self):
+        return {
+            'enabled': True,
+            'configured': True,
+            'connected': False,
+            'redirect_uri': 'https://box.example/api/v1/spotify/oauth/callback',
+            'device_name': 'Phoniebox',
+        }
+
+
+class FakeSpotifyLibrary:
+    def __init__(self):
+        self.mode = 'account'
+        self.items = []
+
+    def status(self):
+        return {'mode': self.mode, 'items': self.items}
+
+    def set_mode(self, mode):
+        self.mode = mode
+        return self.status()
+
+    def add(self, link):
+        item = {
+            'album': 'Quiet Time',
+            'content_uri': 'spotify:playlist:playlist-id',
+            'source_link': link,
+        }
+        self.items.append(item)
+        return item
+
+    def remove(self, uri):
+        self.items = [
+            item for item in self.items
+            if item['content_uri'] != uri
+        ]
+        return self.status()
+
+    def remove_many(self, uris):
+        self.items = [
+            item for item in self.items
+            if item['content_uri'] not in uris
+        ]
+        return self.status()
+
+
 def test_broker_uses_prefix_matching_and_per_client_snapshots():
     broker = EventBroker()
     player = FakeClient()
@@ -148,11 +214,13 @@ class ApiHandlerTest(tornado.testing.AsyncHTTPTestCase):
             lambda: self.library_directory.name,
             lambda: self.library_updates.append('update') or 'update-1',
         )
+        self.spotify_service = FakeSpotifyService()
         return make_application(
             self.broker,
             self.executor,
             self.rpc_processor,
             library=self.library,
+            spotify_service=self.spotify_service,
         )
 
     def tearDown(self):
@@ -165,6 +233,90 @@ class ApiHandlerTest(tornado.testing.AsyncHTTPTestCase):
 
         assert response.code == 200
         assert json.loads(response.body) == {'status': 'ok'}
+
+    def test_spotify_status_authorization_callback_and_disconnect(self):
+        status = self.fetch('/api/v1/spotify')
+        assert status.code == 200
+        assert json.loads(status.body)['device_name'] == 'Phoniebox'
+
+        start = self.fetch(
+            '/api/v1/spotify/oauth/start',
+            method='POST',
+            body=b'',
+        )
+        assert json.loads(start.body) == {
+            'authorization_url': 'https://accounts.spotify.test/authorize',
+        }
+
+        callback = self.fetch(
+            '/api/v1/spotify/oauth/callback?code=code-value&state=state-value',
+        )
+        assert callback.code == 200
+        assert b'Spotify connected' in callback.body
+        assert self.spotify_service.oauth.completed == [('code-value', 'state-value')]
+
+        disconnected = self.fetch(
+            '/api/v1/spotify',
+            method='DELETE',
+            body=None,
+        )
+        assert disconnected.code == 204
+        assert self.spotify_service.oauth.disconnected
+
+    def test_spotify_library_mode_and_curated_items(self):
+        initial = self.fetch('/api/v1/spotify/library')
+        assert json.loads(initial.body) == {'mode': 'account', 'items': []}
+
+        mode = self.fetch(
+            '/api/v1/spotify/library',
+            method='PUT',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'mode': 'curated'}),
+        )
+        assert json.loads(mode.body)['mode'] == 'curated'
+
+        added = self.fetch(
+            '/api/v1/spotify/library/items',
+            method='POST',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({
+                'link': 'https://open.spotify.com/playlist/playlist-id',
+            }),
+        )
+        assert added.code == 201
+        assert json.loads(added.body)['item']['content_uri'] == (
+            'spotify:playlist:playlist-id'
+        )
+
+        removed = self.fetch(
+            '/api/v1/spotify/library/items',
+            method='DELETE',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'uri': 'spotify:playlist:playlist-id'}),
+            allow_nonstandard_methods=True,
+        )
+        assert json.loads(removed.body) == {'mode': 'curated', 'items': []}
+
+        self.spotify_service.library.items = [
+            {'content_uri': 'spotify:album:one'},
+            {'content_uri': 'spotify:playlist:two'},
+        ]
+        removed_many = self.fetch(
+            '/api/v1/spotify/library/items',
+            method='DELETE',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({
+                'uris': [
+                    'spotify:album:one',
+                    'spotify:playlist:two',
+                ],
+            }),
+            allow_nonstandard_methods=True,
+        )
+        assert json.loads(removed_many.body) == {
+            'mode': 'curated',
+            'items': [],
+        }
 
     def test_http_rpc(self):
         response = self.fetch(

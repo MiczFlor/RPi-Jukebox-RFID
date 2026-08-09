@@ -141,7 +141,8 @@
       "tracks": "Tracks"
     },
     "sources": {
-      "mpd": "Local"
+      "mpd": "Local",
+      "spotify": "Spotify"
     },
     "overview": {
       "group": "{{source}} {{view}}",
@@ -213,10 +214,34 @@
         }
       }
     },
+    "spotify": {
+      "manager": {
+        "actions-label": "Curated Spotify library actions",
+        "add": "Add link",
+        "select": "Select",
+        "select-item": "Select {{name}}",
+        "delete-selected_one": "Remove {{count}} item",
+        "delete-selected_other": "Remove {{count}} items",
+        "add-dialog": {
+          "title": "Add Spotify content",
+          "link": "Spotify link",
+          "confirm": "Add"
+        },
+        "delete": {
+          "title_one": "Remove {{count}} item?",
+          "title_other": "Remove {{count}} items?",
+          "description": "This only removes the selection from the curated Phoniebox library. Spotify content is not deleted."
+        }
+      }
+    },
     "albums": {
       "unknown-album": "Unknown album",
       "unknown-artist": "Unknown artist",
       "unknown-title": "Unknown title",
+      "spotify-album": "Spotify album",
+      "spotify-playlist": "Spotify playlist",
+      "spotify-collection": "Spotify collection",
+      "spotify-track": "Spotify track",
       "no-music": "No music found!",
       "empty-library": "Your library is empty!",
       "no-songs-in-album": "Strange, no songs in this album.",
@@ -293,6 +318,28 @@
       "title": "General Settings",
       "show_covers": {
         "title": "Show Cover Art"
+      }
+    },
+    "spotify": {
+      "title": "Spotify",
+      "status": "Account",
+      "device": "Spotify Connect device",
+      "redirect-uri": "OAuth redirect URI",
+      "connect": "Connect",
+      "disconnect": "Disconnect",
+      "refresh": "Refresh Spotify status",
+      "popup-blocked": "Allow pop-ups to connect the Spotify account.",
+      "states": {
+        "disabled": "Disabled",
+        "not-configured": "Not configured",
+        "not-connected": "Not connected",
+        "connected": "Connected"
+      },
+      "library": {
+        "title": "Library",
+        "mode": "Spotify library mode",
+        "account": "Account library",
+        "curated": "Curated library"
       }
     },
     "timers": {

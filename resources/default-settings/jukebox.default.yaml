@@ -93,6 +93,16 @@ playermpd:
   stopped_prev_action: prev
   # Must be one of: 'none', 'next', 'rewind':
   stopped_next_action: next
+players:
+  spotify:
+    # Requires Premium, a user-owned Spotify developer app, and librespot.
+    enabled: false
+    client_id: ''
+    # Must exactly match a redirect URI configured in the Spotify developer app.
+    redirect_uri: ''
+    device_name: Phoniebox
+    token_file: ../../shared/settings/spotify_tokens.json
+    library_file: ../../shared/settings/spotify_library.json
 rpc:
   tcp_port: 5555
 api:
