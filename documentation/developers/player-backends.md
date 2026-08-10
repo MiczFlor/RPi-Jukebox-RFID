@@ -39,6 +39,24 @@ Folder playback, folder browsing, local library updates, and cover-cache
 flushing route to the default backend. Transport controls such as pause, next,
 seek, and volume continue to target the active backend.
 
+`play` optionally takes a position in the backend's current playlist:
+
+```python
+play(pos=None)
+```
+
+Without `pos` playback starts at the current position, which is the behaviour
+of the argument-less call every existing client uses. With `pos` playback jumps
+to that position, counting from 0, and leaves the rest of the playlist queued
+so that next and previous keep working afterwards.
+
+The coordinator forwards `pos` only when a caller provides it, so a backend
+whose `play()` takes no arguments keeps serving every existing call and raises
+`TypeError` only when a client actually requests a position. A backend without
+an addressable playlist should raise `NotImplementedError` for a `pos` other
+than `None` rather than ignore it, so that the limitation is visible to the
+client instead of looking like a jump that silently did nothing.
+
 ## Library Contract
 
 Each catalog backend describes its Web App navigation through
