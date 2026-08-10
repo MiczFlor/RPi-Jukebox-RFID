@@ -2,6 +2,9 @@ from contextlib import nullcontext
 from types import SimpleNamespace
 from unittest.mock import Mock, sentinel
 
+import mpd
+import pytest
+
 import jukebox.publishing as publishing
 
 from components.player.backends.mpd import PlayerMPD
@@ -9,6 +12,39 @@ from components.player.backends.mpd import PlayerMPD
 
 def mpd_backend():
     return PlayerMPD.__new__(PlayerMPD)
+
+
+@pytest.mark.parametrize(
+    ('pos', 'expected_args'),
+    [
+        (None, ()),
+        # Position 0 must reach mpd instead of being mistaken for an omitted argument
+        (0, (0,)),
+        (3, (3,)),
+        # RPC arguments arrive from JSON and from YAML card configurations
+        ('3', (3,)),
+    ],
+)
+def test_play_starts_at_the_requested_playlist_position(pos, expected_args):
+    backend = mpd_backend()
+    backend.mpd_lock = nullcontext()
+    play = Mock()
+    backend.mpd_client = SimpleNamespace(play=play)
+
+    backend.play(pos)
+
+    play.assert_called_once_with(*expected_args)
+
+
+def test_play_reports_a_position_outside_the_playlist():
+    backend = mpd_backend()
+    backend.mpd_lock = nullcontext()
+    backend.mpd_client = SimpleNamespace(
+        play=Mock(side_effect=mpd.base.CommandError('Bad song index')),
+    )
+
+    with pytest.raises(mpd.base.CommandError):
+        backend.play(99)
 
 
 def test_library_source_describes_local_views():

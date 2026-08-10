@@ -337,9 +337,22 @@ class PlayerMPD:
         return state
 
     @plugs.tag
-    def play(self):
+    def play(self, pos=None):
+        """
+        Start playback
+
+        Without *pos* playback starts at the current playlist position, which is the behaviour
+        of the argument-less call. With *pos* playback starts at that position of the current
+        playlist, leaving the playlist itself untouched.
+
+        :param pos: Optional position in the current playlist, counting from 0.
+                    A position outside the playlist raises :class:`mpd.base.CommandError`
+        """
         with self.mpd_lock:
-            self.mpd_client.play()
+            if pos is None:
+                self.mpd_client.play()
+            else:
+                self.mpd_client.play(int(pos))
 
     @plugs.tag
     def stop(self):

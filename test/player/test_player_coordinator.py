@@ -50,6 +50,7 @@ def test_rejects_invalid_backend_registrations():
         ('update', (), ()),
         ('update_wait', (), ()),
         ('play', (), ()),
+        ('play', (3,), (3,)),
         ('stop', (), ()),
         ('pause', (), (1,)),
         ('pause', (0,), (0,)),
@@ -99,6 +100,18 @@ def test_delegates_existing_player_contract(
 
     assert result is sentinel.result
     backend_method.assert_called_once_with(*backend_args)
+
+
+def test_play_forwards_the_first_playlist_position():
+    # Position 0 is a valid position and must not be mistaken for an omitted argument,
+    # which would silently turn 'play the first track' into 'resume where we are'
+    backend_play = Mock(return_value=sentinel.result)
+    coordinator = PlayerCoordinator()
+    coordinator.register_backend('mpd', backend_with(play=backend_play))
+
+    coordinator.play(0)
+
+    backend_play.assert_called_once_with(0)
 
 
 def test_switch_stops_old_backend_before_new_content_starts():

@@ -142,8 +142,17 @@ class PlayerCoordinator:
         return self._call_default('update_wait')
 
     @plugs.tag
-    def play(self):
-        return self._call_active('play')
+    def play(self, pos=None):
+        """
+        Start playback on the active backend
+
+        :param pos: Optional position in the backend's current playlist, counting from 0.
+                    Omit to start at the current position
+        """
+        # Forward only when given, so backends with an argument-less play() keep working
+        if pos is None:
+            return self._call_active('play')
+        return self._call_active('play', pos)
 
     @plugs.tag
     def stop(self):
