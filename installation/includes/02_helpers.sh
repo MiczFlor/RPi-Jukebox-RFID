@@ -467,6 +467,23 @@ verify_apt_packages() {
     log "  CHECK"
 }
 
+# Check if the command(s) exist and are executable. Fail on first missing.
+verify_commands_exists() {
+    local commands="$@"
+    log "  Verify commands exist: '${commands}'"
+
+    if [[ -z "${commands}" ]]; then
+        exit_on_error "ERROR: at least one parameter value is missing!"
+    fi
+
+    for command in ${commands}
+    do
+        command -v "${command}" >/dev/null 2>&1 \
+            || exit_on_error "ERROR: '${command}' not found in PATH"
+    done
+    log "  CHECK"
+}
+
 # Check if all passed modules are installed. Fail on first missing.
 verify_pip_modules() {
     local modules="$@"
