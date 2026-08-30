@@ -22,13 +22,10 @@ logger = logging.getLogger('jb.rfid.nfcpy')
 cfg = jukebox.cfghandler.get_handler('rfid')
 
 
-def query_customization() -> dict:
-    # filter all log records from nfc.clf
-    loggerNfcClf = logging.getLogger('nfc.clf')
-    loggerNfcClf.filter = lambda record: 0
-
-    devices = []
+def _list_devices() -> list:
+    """Enumerate the NFC devices currently available (USB and serial)."""
     clf = nfc.ContactlessFrontend()
+    devices = []
 
     # find usb devices
     for vid_pid_pair in nfc.clf.device.usb_device_map.keys():
@@ -47,8 +44,39 @@ def query_customization() -> dict:
                 devices.append({'id': device_id, 'vendor': clf.device.vendor_name, 'name': clf.device.product_name})
                 clf.close()
 
-    print("\nChoose RFID device from USB device list:\n")
+    return devices
+
+
+def query_customization(defaults: dict | None = None) -> dict:
+    # filter all log records from nfc.clf
+    loggerNfcClf = logging.getLogger('nfc.clf')
+    loggerNfcClf.filter = lambda record: 0
+
+    if defaults is not None and 'device_path' in defaults:
+        # Non-interactive with an explicit device path: no enumeration and no
+        # prompts needed (the reader does not have to be connected at
+        # configuration time).
+        return {'device_path': defaults['device_path']}
+
+    devices = _list_devices()
     logger.debug(f"USB devices: {[x['name'] for x in devices]}")
+
+    if defaults is not None:
+        # Non-interactive: auto-detect a uniquely connected device. Raises a
+        # RuntimeError when no safe choice can be made instead of writing an
+        # unusable device entry.
+        if len(devices) == 0:
+            raise RuntimeError(
+                "USB device list is empty. Make sure the NFC reader is connected "
+                "and re-run the reader registration, or provide the device via "
+                "RFID_READER_PARAMS (device_path=...).")
+        if len(devices) == 1:
+            return {'device_path': devices[0]['id']}
+        raise RuntimeError(
+            "Multiple NFC reader devices found; cannot pick one automatically. "
+            "Provide the device via RFID_READER_PARAMS (device_path=...).")
+
+    print("\nChoose RFID device from USB device list:\n")
     if len(devices) == 0:
         logger.error("USB device list is empty. Make sure USB RFID reader is connected. Then re-run reader registration")
         return {'device_path': None}

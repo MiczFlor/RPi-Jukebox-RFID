@@ -35,3 +35,27 @@ rfid:
 ```
 
 For possible values see the `path` parameter in this [nfcpy documentation](https://nfcpy.readthedocs.io/en/latest/modules/clf.html#nfc.clf.ContactlessFrontend.open)
+
+## Non-Interactive Installation
+
+During a non-interactive installation (see
+[Non-Interactive Installation](../../builders/installation.md#non-interactive-installation)) the
+device path is supplied via `RFID_READER_PARAMS`. For the example above
+(`usb:072f:2200`) add these lines to your `install_config.env`:
+
+```bash
+ENABLE_RFID_READER=true
+RFID_READER_MODULE=generic_nfcpy
+RFID_READER_PARAMS="device_path=usb:072f:2200"
+```
+
+The installer then writes the `device_path` into the reader's `config` section
+of `shared/settings/rfid.yaml` — no interactive device selection is needed.
+When `RFID_READER_PARAMS` is omitted and exactly one NFC reader is connected,
+the installer auto-detects and uses that device automatically.
+
+The reader's dependencies are installed automatically as well
+(`RFID_READER_DEPS=auto`, the default): the `nfcpy` Python package and the
+driver/system setup from `setup.inc.sh` (kernel module blacklisting, udev
+rules, user groups) so the reader is accessible without root. Set
+`RFID_READER_DEPS=no` in `install_config.env` to skip this step.

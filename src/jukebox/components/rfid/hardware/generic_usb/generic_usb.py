@@ -70,7 +70,105 @@ def _is_keyboard(device: evdev.InputDevice) -> bool:
     return is_keyboard_res
 
 
-def query_customization() -> dict:
+def _device_config_entry(dev, devices, devices_is_key) -> dict:
+    """Build the reader config entry for the selected device.
+
+    dev.name is not unique in case
+      (a) the multiple identical devices are connected
+      (b) a device registers itself multiple times with different capabilities (e.g. KKMoon)
+    dev.phys is unique down to the actual USB port used
+      i.e. if the device gets unplugged and re-plugged into a different USB port it will not be recognized again
+    The solution is to use as little information as possible to identify the USB Reader
+      Pro: It does not matter which USB port is used, or if a USB hub is later inserted
+      Con: All RFID readers must be connected BEFORE running the query_customization, so we can identify possible duplicates
+    "As little information as possible" means
+      (a) check if name is unique
+      (b) check if name + isKey is unique
+      (c) use full physical path
+    """
+    dev_id = devices.index(dev)
+    name_is_unique = len([d for d in devices if d.name == dev.name]) == 1
+    key_check_is_unique = len([d for x, d in enumerate(devices)
+                               if d.name == dev.name and devices_is_key[x] == devices_is_key[dev_id]]) == 1
+
+    return {'device_name': dev.name,
+            'device_phys': dev.phys,
+            'key_check': devices_is_key[dev_id],
+            'name_is_unique': name_is_unique,
+            'key_check_is_unique': key_check_is_unique,
+            'log_all_keys': False}
+
+
+def _select_device_noninteractive(devices, devices_is_key, defaults) -> evdev.InputDevice:
+    """Select the device to configure from supplied parameters or by unique auto-detection.
+
+    :param devices: list of opened evdev input devices
+    :param devices_is_key: list of is_keyboard() results aligned with devices
+    :param defaults: dict with optional 'device_name' / 'device_phys' keys
+    :raises RuntimeError: when the device cannot be determined unambiguously
+    :return: the selected device
+    """
+    device_name = defaults.get('device_name')
+    device_phys = defaults.get('device_phys')
+
+    if device_phys:
+        matches = [d for d in devices if d.phys == device_phys]
+        if not matches:
+            raise RuntimeError(
+                f"No USB device with the physical path '{device_phys}' found. "
+                "Make sure the reader is connected, or adjust RFID_READER_PARAMS "
+                "(device_name=...).")
+        return matches[0]
+
+    if device_name:
+        matches = [d for d in devices if d.name == device_name]
+        if not matches:
+            raise RuntimeError(
+                f"No USB device named '{device_name}' found. Make sure the reader is "
+                "connected, or adjust RFID_READER_PARAMS (device_name=...).")
+        # Prefer the keyboard-capable entry (e.g. KKMoon registers twice)
+        keyboards = [d for d in matches if _is_keyboard(d)]
+        if len(keyboards) == 1:
+            return keyboards[0]
+        if len(matches) == 1:
+            return matches[0]
+        raise RuntimeError(
+            f"Multiple USB devices named '{device_name}' found. Disambiguate with "
+            "RFID_READER_PARAMS (device_phys=...).")
+
+    # Auto-detection: pick a uniquely connected keyboard-like device
+    keyboards = [d for d in devices if _is_keyboard(d)]
+    if len(keyboards) == 1:
+        return keyboards[0]
+    if len(keyboards) == 0:
+        raise RuntimeError(
+            "No keyboard-like USB device detected. Make sure the USB RFID reader is "
+            "connected, or provide the device via RFID_READER_PARAMS (device_name=...).")
+    raise RuntimeError(
+        "Multiple keyboard-like USB devices detected; cannot pick one automatically. "
+        "Provide the reader via RFID_READER_PARAMS (device_name=... or device_phys=...).")
+
+
+def query_customization(defaults: dict | None = None) -> dict:
+    if defaults is not None:
+        # Non-interactive: select the reader device from the supplied params
+        # or, when no params were given, auto-detect a uniquely connected
+        # keyboard-like device. Raises a RuntimeError when no safe choice can
+        # be made instead of writing an unusable device entry.
+        devices = _get_devices()
+        logger.debug(f"USB devices: {[x.name for x in devices]}")
+        if len(devices) == 0:
+            _close_devices(devices)
+            raise RuntimeError(
+                "USB device list is empty. Make sure the USB RFID reader is connected, "
+                "or provide the device via RFID_READER_PARAMS (device_name=...).")
+        devices_is_key = [_is_keyboard(x) for x in devices]
+        try:
+            dev = _select_device_noninteractive(devices, devices_is_key, defaults)
+        finally:
+            _close_devices(devices)
+        return _device_config_entry(dev, devices, devices_is_key)
+
     print("\nChoose RFID device from USB device list:\n"
           "If you are planning to connect multiple USB Readers make sure ALL of them are connected before running this script!"
           f"If your RFID reader appears multiple times ({Colors.lightgreen}e.g. KKMoon{Colors.reset}), "
@@ -92,30 +190,10 @@ def query_customization() -> dict:
     print("")
     dev_id = pyil.input_int("Device number?", min=0, max=len(devices) - 1, prompt_color=Colors.lightgreen, prompt_hint=True)
 
-    # dev.name is not unique in case
-    #   (a) the multiple identical devices are connected
-    #   (b) a device registers itself multiple times with different capabilities (e.g. KKMoon)
-    # dev.phys is unique down to the actual USB port used
-    #   i.e. if the device gets unplugged and re-plugged into a different USB port it will not be recognized again
-    # The solution is to use as little information as possible to identify the USB Reader
-    #   Pro: It does not matter which USB port is used, or if a USB hub is later inserted
-    #   Con: All RFID readers must be connected BEFORE running the query_customization, so we can identify possible duplicates
-    # "As little information as possible" means
-    #   (a) check if name is unique
-    #   (b) check if name + isKey is unique
-    #   (c) use full physical path
-    name_is_unique = len([d for d in devices if d.name == devices[dev_id].name]) == 1
-    key_check_is_unique = len([d for x, d in enumerate(devices)
-                              if d.name == devices[dev_id].name and devices_is_key[x] == devices_is_key[dev_id]]) == 1
-
+    dev = devices[dev_id]
     _close_devices(devices)
 
-    return {'device_name': devices[dev_id].name,
-            'device_phys': devices[dev_id].phys,
-            'key_check': devices_is_key[dev_id],
-            'name_is_unique': name_is_unique,
-            'key_check_is_unique': key_check_is_unique,
-            'log_all_keys': False}
+    return _device_config_entry(dev, devices, devices_is_key)
 
 
 class ReaderClass(ReaderBaseClass):

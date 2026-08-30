@@ -13,7 +13,25 @@ logger = logging.getLogger('jb.rfid.rc522')
 cfg = jukebox.cfghandler.get_handler('rfid')
 
 
-def query_customization() -> dict:
+def _as_bool(value) -> bool:
+    """Parse a reader parameter value ('true'/'false'/'1'/'0'/...) as bool."""
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in ('1', 'true', 'yes', 'y', 'on')
+
+
+def query_customization(defaults: dict | None = None) -> dict:
+    if defaults is not None:
+        # Non-interactive: use the supplied values, falling back to the
+        # documented default wiring (the same values that 'hitting enter'
+        # would pick in the interactive prompts). No prompts are issued.
+        return {'spi_bus': int(defaults.get('spi_bus', 0)),
+                'spi_ce': int(defaults.get('spi_ce', 0)),
+                'pin_irq': int(defaults.get('pin_irq', 24)),
+                'pin_rst': int(defaults.get('pin_rst', 25)),
+                'mode_legacy': _as_bool(defaults.get('mode_legacy', False)),
+                'antenna_gain': int(defaults.get('antenna_gain', 4)),
+                'log_all_cards': _as_bool(defaults.get('log_all_cards', False))}
     prompt_color = Colors.lightgreen
     print("\nCustomization parameters for the MFRC522:\n"
           "You will be fine with the default parameters if you use the default wiring.\n"

@@ -14,11 +14,39 @@ export LC_ALL=C
 GIT_USER=${GIT_USER:-"MiczFlor"}
 GIT_BRANCH=${GIT_BRANCH:-"future3/main"}
 
+# === Non-interactive installation support ===
+# In non-interactive mode all options are supplied via a flat KEY=VALUE
+# config file (install_config.env) which is passed as:
+#   bash install-jukebox.sh --config /tmp/install_config.env
+# This skips all interactive 'read' prompts and installs with the supplied options.
+# Values already provided through the environment (the documented env-var-only
+# variant: NON_INTERACTIVE=true ...) are honoured; command-line options below
+# take precedence.
+INSTALL_CONFIG_FILE="${INSTALL_CONFIG_FILE:-}"
+NON_INTERACTIVE="${NON_INTERACTIVE:-false}"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --config)
+            INSTALL_CONFIG_FILE="$2"
+            NON_INTERACTIVE=true
+            shift 2
+            ;;
+        --non-interactive)
+            NON_INTERACTIVE=true
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Usage: $0 [--config <file>] [--non-interactive]"
+            exit 1
+            ;;
+    esac
+done
+
 # Constants
 GIT_REPO_NAME="RPi-Jukebox-RFID"
 GIT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}"
-echo GIT_BRANCH $GIT_BRANCH
-echo GIT_URL $GIT_URL
 
 CURRENT_USER="${SUDO_USER:-$(whoami)}"
 CURRENT_USER_GROUP=$(id -gn "$CURRENT_USER")
@@ -36,6 +64,9 @@ _setup_logging(){
         exec 3>&1 1>>"${INSTALLATION_LOGFILE}" 2>&1 || { echo "ERROR: Cannot create log file."; exit 1; }
     fi
     echo "Log start: ${INSTALL_ID}"
+    # Publish the log file path to the console so a headless (non-interactive)
+    # process can tail it for a detailed live log.
+    print_lc "INSTALLATION_LOGFILE=${INSTALLATION_LOGFILE}"
 }
 
 # Function to log to both console and logfile
@@ -51,8 +82,11 @@ log() {
 }
 
 # Function to run a command where the output will be logged to both console and logfile
+# Note: propagate the command's exit code via PIPESTATUS — a plain pipe to
+# 'tee' would return tee's exit status (0) and silently hide failures.
 run_and_print_lc() {
   "$@" | tee /dev/fd/3
+  return "${PIPESTATUS[0]}"
 }
 
 # Function to log to console only
@@ -86,14 +120,89 @@ Check install log for details:"
   exit 1
 }
 
+# Load a non-interactive install configuration file (flat KEY=VALUE).
+# Must run after _setup_logging (needs print_lc/log) and before
+# _check_existing_installation (which consumes EXISTING_INSTALL_ACTION).
+_load_install_config() {
+    if [[ -n "$INSTALL_CONFIG_FILE" ]]; then
+        if [[ ! -f "$INSTALL_CONFIG_FILE" ]]; then
+            print_lc "ERROR: Config file not found: $INSTALL_CONFIG_FILE"
+            exit 1
+        fi
+        print_lc "Loading install configuration from: $INSTALL_CONFIG_FILE"
+
+        # The config file is a flat KEY=VALUE file (install_config.env); no YAML
+        # parser is needed on the Pi — the values are simply sourced.
+        # shellcheck disable=SC1090
+        source "$INSTALL_CONFIG_FILE"
+        NON_INTERACTIVE=true
+
+        # GIT_USER/GIT_BRANCH may have been overridden by the config. GIT_URL
+        # was computed above (before sourcing) and must be recomputed for forks.
+        GIT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}"
+
+        log "Configuration loaded from: $INSTALL_CONFIG_FILE"
+    fi
+}
+
 _check_existing_installation() {
     if [[ -e "${INSTALLATION_PATH}" ]]; then
-        print_lc "
+        # Backward-compatible: the interactive flow keeps the hard abort.
+        if [[ "${NON_INTERACTIVE:-}" != "true" ]]; then
+            print_lc "
 ############## EXISTING INSTALLATION FOUND ##############
-Rerunning the installer over an existing installation is
+Rerunning the installation over an existing installation is
 currently not supported (overwrites settings, etc).
 Please backup your 'shared' folder and manually changed
 files and run the installation on a fresh image."
+            exit 1
+        fi
+
+        print_lc "
+############## EXISTING INSTALLATION FOUND ##############
+An existing installation was found at ${INSTALLATION_PATH}."
+
+        case "${EXISTING_INSTALL_ACTION:-backup}" in
+            remove)
+                print_lc "Removing existing installation (user chose 'Remove')."
+                rm -rf "${INSTALLATION_PATH}"
+                ;;
+            backup)
+                local ts backup_dir
+                ts=$(date +%Y%m%d-%H%M%S)
+                backup_dir="${INSTALLATION_PATH}.bak-${ts}"
+                print_lc "Backing up existing installation to ${backup_dir} (user chose 'Backup')."
+                mv "${INSTALLATION_PATH}" "${backup_dir}"
+                ;;
+            *)
+                print_lc "Unknown EXISTING_INSTALL_ACTION '${EXISTING_INSTALL_ACTION}'. Aborting."
+                exit 1
+                ;;
+        esac
+    fi
+}
+
+# Fail fast on an invalid non-interactive configuration instead of
+# discovering the problem halfway through the installation (after the
+# dependencies have already been installed).
+_validate_noninteractive_config() {
+    if [[ "${NON_INTERACTIVE:-}" != "true" ]]; then
+        return 0
+    fi
+    # ENABLE_RFID_READER defaults to true (see 01_default_config.sh); at this
+    # point the defaults are not sourced yet, so treat an unset variable as true.
+    local enable_rfid_reader="${ENABLE_RFID_READER:-true}"
+    if [[ "$enable_rfid_reader" == true && -z "${RFID_READER_MODULE:-}" ]]; then
+        print_lc "ERROR: RFID reader is enabled (ENABLE_RFID_READER defaults to true) but no reader module was configured."
+        print_lc "In non-interactive mode set RFID_READER_MODULE in your config file,"
+        print_lc "or disable the reader setup with ENABLE_RFID_READER=false."
+        exit 1
+    fi
+    # The dependency-handling mode must not prompt in non-interactive mode,
+    # so 'query' is not allowed (it would block on a read prompt).
+    if [[ -n "${RFID_READER_DEPS:-}" && "${RFID_READER_DEPS}" != "auto" && "${RFID_READER_DEPS}" != "no" ]]; then
+        print_lc "ERROR: RFID_READER_DEPS must be 'auto' or 'no' in non-interactive mode (got '${RFID_READER_DEPS}')."
+        print_lc "'query' would prompt for confirmation and is therefore not allowed."
         exit 1
     fi
 }
@@ -135,6 +244,16 @@ _load_sources() {
 
 ### SETUP LOGGING
 _setup_logging
+
+### LOAD NON-INTERACTIVE CONFIG (if any)
+_load_install_config
+
+# Echo the effective repo (after any --config override) for log clarity.
+echo GIT_BRANCH $GIT_BRANCH
+echo GIT_URL $GIT_URL
+
+### VALIDATE NON-INTERACTIVE CONFIG
+_validate_noninteractive_config
 
 ### CHECK PREREQUISITE
 _check_existing_installation

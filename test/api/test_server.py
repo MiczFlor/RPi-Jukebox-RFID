@@ -410,8 +410,13 @@ class ApiHandlerTest(tornado.testing.AsyncHTTPTestCase):
             body=json.dumps({'id': 'request'}),
         )
         rpc_future = self.http_client.fetch(request)
-        await tornado.gen.sleep(0.01)
-        assert started.is_set()
+        # Wait until the blocking processor has been entered (thread started).
+        # A fixed 10 ms sleep is flaky on slow/emulated CI runners (e.g. QEMU
+        # arm64), where executor-thread startup can take longer than the sleep.
+        deadline = time.monotonic() + 5.0
+        while not started.is_set() and time.monotonic() < deadline:
+            await tornado.gen.sleep(0.01)
+        assert started.is_set(), "RPC processor thread did not start in time"
 
         health = await self.http_client.fetch(self.get_url('/api/v1/health'))
         assert health.code == 200
