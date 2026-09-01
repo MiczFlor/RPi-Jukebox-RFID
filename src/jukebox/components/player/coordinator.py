@@ -71,11 +71,17 @@ class PlayerCoordinator:
         logger.info(f"Selected player backend '{name}'")
         return backend
 
-    def _content_backend_name(self, provider=None) -> str:
+    def _content_backend_name(self, provider=None, content_uri=None) -> str:
+        if isinstance(content_uri, str) and content_uri.startswith('spotify:'):
+            return provider or 'spotify'
+        if isinstance(content_uri, str) and content_uri.startswith('service:jellyfin:'):
+            return provider or 'jellyfin'
         return provider or self._get_default_backend_name()
 
-    def _content_backend(self, provider=None) -> Any:
-        return self._select_backend(self._content_backend_name(provider))
+    def _content_backend(self, provider=None, content_uri=None) -> Any:
+        return self._select_backend(
+            self._content_backend_name(provider, content_uri)
+        )
 
     def _call_backend(self, backend: Any, method: str, *args, **kwargs):
         func = getattr(backend, method, None)
@@ -208,7 +214,7 @@ class PlayerCoordinator:
     @plugs.tag
     def play_single(self, song_url, provider=None):
         with self._lock:
-            backend = self._content_backend(provider)
+            backend = self._content_backend(provider, song_url)
             return self._call_backend(backend, 'play_single', song_url)
 
     @plugs.tag
@@ -216,9 +222,9 @@ class PlayerCoordinator:
         return self._call_active('resume')
 
     @plugs.tag
-    def play_card(self, folder: str, recursive: bool = False):
+    def play_card(self, folder: str, recursive: bool = False, provider=None):
         with self._lock:
-            backend = self._content_backend()
+            backend = self._content_backend(provider)
             is_second_swipe = self._call_backend(backend, 'is_second_swipe', folder)
             if is_second_swipe:
                 if self._play_card_callbacks is not None:
@@ -232,7 +238,7 @@ class PlayerCoordinator:
     @plugs.tag
     def get_single_coverart(self, song_url, provider=None):
         return self._call_named(
-            self._content_backend_name(provider),
+            self._content_backend_name(provider, song_url),
             'get_single_coverart',
             song_url,
         )
@@ -244,7 +250,7 @@ class PlayerCoordinator:
             album: str,
             content_uri=None,
             provider=None):
-        backend_name = self._content_backend_name(provider)
+        backend_name = self._content_backend_name(provider, content_uri)
         args = (albumartist, album, content_uri) if content_uri else (albumartist, album)
         return self._call_named(backend_name, 'get_album_coverart', *args)
 
@@ -253,13 +259,17 @@ class PlayerCoordinator:
         return self._call_default('flush_coverart_cache')
 
     @plugs.tag
-    def get_folder_content(self, folder: str):
-        return self._call_default('get_folder_content', folder)
+    def get_folder_content(self, folder: str, provider=None):
+        return self._call_named(
+            self._content_backend_name(provider),
+            'get_folder_content',
+            folder,
+        )
 
     @plugs.tag
-    def play_folder(self, folder: str, recursive: bool = False) -> None:
+    def play_folder(self, folder: str, recursive: bool = False, provider=None) -> None:
         with self._lock:
-            backend = self._content_backend()
+            backend = self._content_backend(provider)
             return self._call_backend(backend, 'play_folder', folder, recursive)
 
     @plugs.tag
@@ -270,7 +280,7 @@ class PlayerCoordinator:
             content_uri=None,
             provider=None):
         with self._lock:
-            backend = self._content_backend(provider)
+            backend = self._content_backend(provider, content_uri)
             args = (albumartist, album, content_uri) if content_uri else (albumartist, album)
             return self._call_backend(backend, 'play_album', *args)
 
@@ -292,25 +302,9 @@ class PlayerCoordinator:
 
     @plugs.tag
     def list_albums(self, provider=None):
-        with self._lock:
-            if provider:
-                return self._call_backend(
-                    self._get_backend(provider),
-                    'list_albums',
-                )
-            if len(self._backends) == 1:
-                return self._call_backend(
-                    next(iter(self._backends.values())),
-                    'list_albums',
-                )
-
-            result = []
-            for name, backend in self._backends.items():
-                try:
-                    result.extend(self._call_backend(backend, 'list_albums') or [])
-                except Exception as error:
-                    logger.warning("Could not read '%s' player catalog: %s", name, error)
-            return result
+        if provider:
+            return self._call_backend(self._get_backend(provider), 'list_albums')
+        return self._call_default('list_albums')
 
     @plugs.tag
     def list_library_sources(self):
@@ -352,7 +346,7 @@ class PlayerCoordinator:
             album,
             content_uri=None,
             provider=None):
-        backend_name = self._content_backend_name(provider)
+        backend_name = self._content_backend_name(provider, content_uri)
         args = (albumartist, album, content_uri) if content_uri else (albumartist, album)
         return self._call_named(
             backend_name,
@@ -363,7 +357,7 @@ class PlayerCoordinator:
     @plugs.tag
     def get_song_by_url(self, song_url, provider=None):
         return self._call_named(
-            self._content_backend_name(provider),
+            self._content_backend_name(provider, song_url),
             'get_song_by_url',
             song_url,
         )

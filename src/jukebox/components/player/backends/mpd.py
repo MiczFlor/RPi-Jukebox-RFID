@@ -530,6 +530,18 @@ class PlayerMPD:
         raise NotImplementedError
 
     @plugs.tag
+    def clear_playlist(self):
+        """Clear the MPD queue without touching the playback options."""
+        with self.mpd_lock:
+            self.mpd_client.clear()
+
+    @plugs.tag
+    def add_to_playlist(self, uri):
+        """Append a single URI to the MPD queue without clearing it."""
+        with self.mpd_lock:
+            self.mpd_client.addid(uri)
+
+    @plugs.tag
     def play_single(self, song_url):
         with self.mpd_lock:
             self.mpd_client.clear()

@@ -32,6 +32,10 @@ _collect_apt_packages() {
         _add_apt_packages mpd mpc
     fi
 
+    if [[ "$SETUP_SPOTIFY" == true && "$(get_architecture)" != "armv6" ]]; then
+        _add_apt_packages ca-certificates libpulse0 libssl3t64
+    fi
+
     if [[ "$ENABLE_SAMBA" == true ]]; then
         _add_apt_packages samba samba-common-bin
     fi

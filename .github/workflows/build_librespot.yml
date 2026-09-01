@@ -1,0 +1,210 @@
+name: Build librespot binaries
+
+on:
+  push:
+    paths:
+      - '.github/workflows/build_librespot.yml'
+      - 'docker/Dockerfile.librespot-build'
+      - 'installation/librespot-checksums.sha256'
+      - 'installation/routines/setup_spotify.sh'
+  pull_request:
+    paths:
+      - '.github/workflows/build_librespot.yml'
+      - 'docker/Dockerfile.librespot-build'
+      - 'installation/librespot-checksums.sha256'
+      - 'installation/routines/setup_spotify.sh'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  LIBRESPOT_BUILD_ID: 303026bb-phoniebox1
+  LIBRESPOT_RELEASE_TAG: librespot-builds
+
+jobs:
+  build:
+    name: Build ${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: armv7
+            platform: linux/arm/v7
+            file_pattern: 'ELF 32-bit LSB.*ARM'
+          - arch: arm64
+            platform: linux/arm64
+            file_pattern: 'ELF 64-bit LSB.*ARM aarch64'
+          - arch: amd64
+            platform: linux/amd64
+            file_pattern: 'ELF 64-bit LSB.*x86-64'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build pinned librespot
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          mkdir -p build/output
+          docker buildx build \
+            --platform "${PLATFORM}" \
+            --file docker/Dockerfile.librespot-build \
+            --target artifact \
+            --output type=local,dest=build/output \
+            .
+
+      - name: Inspect ELF architecture
+        env:
+          FILE_PATTERN: ${{ matrix.file_pattern }}
+        run: file build/output/librespot | grep -E "${FILE_PATTERN}"
+
+      - name: Execute and inspect runtime links on Trixie
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          docker run --rm \
+            --platform "${PLATFORM}" \
+            --volume "${PWD}/build/output:/artifact:ro" \
+            debian:trixie-slim \
+            bash -euxo pipefail -c '
+              apt-get update
+              apt-get install -y --no-install-recommends ca-certificates libpulse0 libssl3t64
+              ldd /artifact/librespot | tee /tmp/ldd.txt
+              ! grep -q "not found" /tmp/ldd.txt
+              grep -q "libpulse\\.so" /tmp/ldd.txt
+              grep -q "libssl\\.so" /tmp/ldd.txt
+              /artifact/librespot --version
+            '
+
+      - name: Create deterministic archive
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          archive_name="librespot-${LIBRESPOT_BUILD_ID}-linux-${ARCH}.tar.gz"
+          mkdir -p build/package build/dist
+          install -m 755 build/output/librespot build/package/librespot
+          install -m 644 build/output/LICENSE build/package/LICENSE
+          tar \
+            --sort=name \
+            --format=gnu \
+            --mtime='UTC 1970-01-01' \
+            --owner=0 \
+            --group=0 \
+            --numeric-owner \
+            -C build/package \
+            -cf - \
+            LICENSE librespot \
+            | gzip -n > "build/dist/${archive_name}"
+          (
+            cd build/dist
+            sha256sum "${archive_name}" > "${archive_name}.sha256"
+          )
+
+      - name: Check committed checksum
+        env:
+          ARCH: ${{ matrix.arch }}
+        run: |
+          archive_name="librespot-${LIBRESPOT_BUILD_ID}-linux-${ARCH}.tar.gz"
+          generated_checksum="$(cut -d ' ' -f 1 "build/dist/${archive_name}.sha256")"
+          committed_checksum="$(
+            awk -v name="${archive_name}" '$2 == name { print $1 }' \
+              installation/librespot-checksums.sha256
+          )"
+          if [[ -n "${committed_checksum}" && "${generated_checksum}" != "${committed_checksum}" ]]; then
+            echo "Committed checksum for ${archive_name} does not match" >&2
+            exit 1
+          fi
+          if [[ -z "${committed_checksum}" ]]; then
+            echo "::notice title=Commit librespot checksum::${generated_checksum}  ${archive_name}"
+          fi
+          cat "build/dist/${archive_name}.sha256" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload temporary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: librespot-${{ matrix.arch }}
+          path: build/dist/*
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish immutable release assets
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: librespot-builds-${{ github.repository }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download archives
+        uses: actions/download-artifact@v4
+        with:
+          pattern: librespot-*
+          path: dist
+          merge-multiple: true
+
+      - name: Require committed checksums
+        run: |
+          for checksum_file in dist/*.tar.gz.sha256; do
+            archive_name="$(basename "${checksum_file%.sha256}")"
+            generated_checksum="$(cut -d ' ' -f 1 "${checksum_file}")"
+            committed_checksum="$(
+              awk -v name="${archive_name}" '$2 == name { print $1 }' \
+                installation/librespot-checksums.sha256
+            )"
+            test -n "${committed_checksum}"
+            test "${generated_checksum}" = "${committed_checksum}"
+          done
+
+      - name: Create persistent prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view "${LIBRESPOT_RELEASE_TAG}" >/dev/null 2>&1; then
+            gh release create "${LIBRESPOT_RELEASE_TAG}" \
+              --target "${GITHUB_SHA}" \
+              --title "Phoniebox librespot binaries" \
+              --notes "Pinned, immutable librespot binaries used by native and Docker installations." \
+              --prerelease
+          fi
+
+      - name: Publish immutable assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          release_id="$(
+            gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${LIBRESPOT_RELEASE_TAG}" \
+              --jq '.id'
+          )"
+          for asset_path in dist/*; do
+            asset_name="$(basename "${asset_path}")"
+            asset_id="$(
+              gh api "repos/${GITHUB_REPOSITORY}/releases/${release_id}/assets?per_page=100" \
+                --jq ".[] | select(.name == \"${asset_name}\") | .id"
+            )"
+            if [[ -z "${asset_id}" ]]; then
+              gh release upload "${LIBRESPOT_RELEASE_TAG}" "${asset_path}"
+              continue
+            fi
+            gh api \
+              -H 'Accept: application/octet-stream' \
+              "repos/${GITHUB_REPOSITORY}/releases/assets/${asset_id}" \
+              > "/tmp/${asset_name}"
+            if ! cmp --silent "${asset_path}" "/tmp/${asset_name}"; then
+              echo "Refusing to replace immutable asset ${asset_name}" >&2
+              exit 1
+            fi
+          done

@@ -78,10 +78,6 @@ _jukebox_webapp_register_as_system_service_with_nginx() {
   sudo cp -f "${INSTALLATION_PATH}/resources/default-settings/nginx.default" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
   sudo sed -i "s|%%INSTALLATION_PATH%%|${INSTALLATION_PATH}|g" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
 
-  if [ "$DISABLE_IPv6" = true ] ; then
-    sudo sed -i '/listen \[::\]:80/d' "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
-  fi
-
   # make sure nginx can access the home directory of the user
   sudo chmod o+x "${HOME_PATH}"
 
@@ -97,10 +93,6 @@ _jukebox_webapp_check() {
     verify_file_contains_string "location = /api/v1/library/files" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
     verify_file_contains_string "client_max_body_size 1g" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
     verify_file_contains_string "proxy_request_buffering off" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
-
-    if [ "$DISABLE_IPv6" = true ] ; then
-      verify_file_does_not_contain_string "listen [::]:80" "${WEBAPP_NGINX_SITE_DEFAULT_CONF}"
-    fi
 
     verify_service_enablement nginx.service enabled
 }

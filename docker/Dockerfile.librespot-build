@@ -1,0 +1,35 @@
+FROM rust:1.85-slim-bookworm AS build
+
+ARG LIBRESPOT_REV=303026bba2af4c31e710afefc3aad4a89e38c812
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    libpulse-dev \
+    libssl-dev \
+    pkg-config \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN git init /usr/src/librespot \
+    && git -C /usr/src/librespot remote add origin \
+      https://github.com/librespot-org/librespot.git \
+    && git -C /usr/src/librespot fetch --depth 1 origin "${LIBRESPOT_REV}" \
+    && git -C /usr/src/librespot checkout --detach FETCH_HEAD \
+    && test "$(git -C /usr/src/librespot rev-parse HEAD)" = "${LIBRESPOT_REV}"
+
+ARG LIBRESPOT_SOURCE_DATE_EPOCH=1775501277
+RUN SOURCE_DATE_EPOCH="${LIBRESPOT_SOURCE_DATE_EPOCH}" \
+    CARGO_HOME=/opt/cargo-home \
+    CARGO_TARGET_DIR=/opt/cargo-target \
+    cargo install \
+      --path /usr/src/librespot \
+      --locked \
+      --root /opt/librespot \
+      --no-default-features \
+      --features native-tls,pulseaudio-backend,with-libmdns
+
+FROM scratch AS artifact
+
+COPY --from=build /opt/librespot/bin/librespot /librespot
+COPY --from=build /usr/src/librespot/LICENSE /LICENSE

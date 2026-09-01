@@ -141,7 +141,9 @@
       "tracks": "Titel"
     },
     "sources": {
-      "mpd": "Lokal"
+      "mpd": "Lokal",
+      "spotify": "Spotify",
+      "jellyfin": "Jellyfin"
     },
     "overview": {
       "group": "{{source}}: {{view}}",
@@ -213,10 +215,34 @@
         }
       }
     },
+    "spotify": {
+      "manager": {
+        "actions-label": "Aktionen für die kuratierte Spotify-Bibliothek",
+        "add": "Link hinzufügen",
+        "select": "Auswählen",
+        "select-item": "{{name}} auswählen",
+        "delete-selected_one": "{{count}} Element entfernen",
+        "delete-selected_other": "{{count}} Elemente entfernen",
+        "add-dialog": {
+          "title": "Spotify-Inhalt hinzufügen",
+          "link": "Spotify-Link",
+          "confirm": "Hinzufügen"
+        },
+        "delete": {
+          "title_one": "{{count}} Element entfernen?",
+          "title_other": "{{count}} Elemente entfernen?",
+          "description": "Die Auswahl wird nur aus der kuratierten Phoniebox-Bibliothek entfernt. Spotify-Inhalte werden nicht gelöscht."
+        }
+      }
+    },
     "albums": {
       "unknown-album": "Unbekanntes Album",
       "unknown-artist": "Unbekannter Künstler",
       "unknown-title": "Unbekannter Titel",
+      "spotify-album": "Spotify-Album",
+      "spotify-playlist": "Spotify-Playlist",
+      "spotify-collection": "Spotify-Sammlung",
+      "spotify-track": "Spotify-Titel",
       "no-music": "Keine Musik vorhanden!",
       "empty-library": "Deine Bibliothek ist noch leer!",
       "no-songs-in-album": "Komisch, in diesem Album gibt es keine Songs.",
@@ -294,6 +320,49 @@
       "show_covers": {
         "title": "Cover anzeigen"
       }
+    },
+    "spotify": {
+      "title": "Spotify",
+      "status": "Konto",
+      "device": "Spotify-Connect-Gerät",
+      "redirect-uri": "OAuth-Weiterleitungs-URI",
+      "connect": "Verbinden",
+      "disconnect": "Trennen",
+      "refresh": "Spotify-Status aktualisieren",
+      "popup-blocked": "Pop-ups müssen für die Spotify-Verbindung erlaubt sein.",
+      "states": {
+        "disabled": "Deaktiviert",
+        "not-configured": "Nicht konfiguriert",
+        "not-connected": "Nicht verbunden",
+        "connected": "Verbunden"
+      },
+      "library": {
+        "title": "Bibliothek",
+        "mode": "Spotify-Bibliotheksmodus",
+        "account": "Kontobibliothek",
+        "curated": "Kuratierte Bibliothek"
+      }
+    },
+    "jellyfin": {
+      "title": "Jellyfin",
+      "enabled": "Jellyfin aktivieren",
+      "host": "Server-Adresse",
+      "api-key": "API-Key",
+      "username": "Benutzername",
+      "password": "Passwort",
+      "catalog-cache-ttl": "Katalog-Cache (Sekunden)",
+      "request-timeout": "Anfrage-Timeout (Sekunden)",
+      "secret-configured": "Konfiguriert",
+      "secret-keep": "Leer lassen, um den gespeicherten Wert beizubehalten",
+      "secret-warning": "Passwort und API-Key werden aus Sicherheitsgründen niemals angezeigt. Gib einen neuen Wert ein, um ihn zu ändern.",
+      "restart-hint": "Die Änderungen werden erst nach einem Neustart der Jukebox übernommen.",
+      "save": "Speichern",
+      "saved": "Einstellungen gespeichert.",
+      "test": "Testen",
+      "test-found": "Jellyfin-Server gefunden unter {{url}}",
+      "test-adopt": "Adresse übernehmen",
+      "test-not-found": "Kein Jellyfin-Server unter den getesteten Adressen gefunden.",
+      "test-candidates": "Getestete Adressen:"
     },
     "timers": {
       "option-label-timeslot": "{{value}} min",

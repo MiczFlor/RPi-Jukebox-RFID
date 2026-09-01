@@ -33,12 +33,14 @@ using the alias option:
 ```
 
 > [!NOTE]
->
-> * Remember card ids must be strings! So, quote them!
-> * *args* must be
-a **list** of arguments to be passed! Even if ony a single argument is
-passed. So, use *args: \[value\]*. We try catch mis-uses but that might
-not always work.
+> Both playback aliases (`play_card` and `play_folder`) are dispatched
+> through `player.ctrl.play_card`, which runs the coordinator's second-swipe
+> detection and the card callbacks. A card using `alias: play_folder`
+> therefore behaves like a `play_card` card (including a configured
+> second-swipe action) and no longer maps to `player.ctrl.play_folder`.
+> Remember that card ids must be strings, so quote them, and that `args`
+> must be a **list** of arguments — even for a single argument use
+> `args: [value]`. Mis-uses are caught where possible, but not always.
 
 ## Additional options
 

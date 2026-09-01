@@ -141,7 +141,9 @@
       "tracks": "Tracks"
     },
     "sources": {
-      "mpd": "Local"
+      "mpd": "Local",
+      "spotify": "Spotify",
+      "jellyfin": "Jellyfin"
     },
     "overview": {
       "group": "{{source}} {{view}}",
@@ -213,10 +215,34 @@
         }
       }
     },
+    "spotify": {
+      "manager": {
+        "actions-label": "Curated Spotify library actions",
+        "add": "Add link",
+        "select": "Select",
+        "select-item": "Select {{name}}",
+        "delete-selected_one": "Remove {{count}} item",
+        "delete-selected_other": "Remove {{count}} items",
+        "add-dialog": {
+          "title": "Add Spotify content",
+          "link": "Spotify link",
+          "confirm": "Add"
+        },
+        "delete": {
+          "title_one": "Remove {{count}} item?",
+          "title_other": "Remove {{count}} items?",
+          "description": "This only removes the selection from the curated Phoniebox library. Spotify content is not deleted."
+        }
+      }
+    },
     "albums": {
       "unknown-album": "Unknown album",
       "unknown-artist": "Unknown artist",
       "unknown-title": "Unknown title",
+      "spotify-album": "Spotify album",
+      "spotify-playlist": "Spotify playlist",
+      "spotify-collection": "Spotify collection",
+      "spotify-track": "Spotify track",
       "no-music": "No music found!",
       "empty-library": "Your library is empty!",
       "no-songs-in-album": "Strange, no songs in this album.",
@@ -294,6 +320,49 @@
       "show_covers": {
         "title": "Show Cover Art"
       }
+    },
+    "spotify": {
+      "title": "Spotify",
+      "status": "Account",
+      "device": "Spotify Connect device",
+      "redirect-uri": "OAuth redirect URI",
+      "connect": "Connect",
+      "disconnect": "Disconnect",
+      "refresh": "Refresh Spotify status",
+      "popup-blocked": "Allow pop-ups to connect the Spotify account.",
+      "states": {
+        "disabled": "Disabled",
+        "not-configured": "Not configured",
+        "not-connected": "Not connected",
+        "connected": "Connected"
+      },
+      "library": {
+        "title": "Library",
+        "mode": "Spotify library mode",
+        "account": "Account library",
+        "curated": "Curated library"
+      }
+    },
+    "jellyfin": {
+      "title": "Jellyfin",
+      "enabled": "Enable Jellyfin",
+      "host": "Server host",
+      "api-key": "API key",
+      "username": "Username",
+      "password": "Password",
+      "catalog-cache-ttl": "Catalog cache TTL (seconds)",
+      "request-timeout": "Request timeout (seconds)",
+      "secret-configured": "Configured",
+      "secret-keep": "Leave empty to keep the stored value",
+      "secret-warning": "Password and API key are never displayed for security reasons. Enter a new value to change them.",
+      "restart-hint": "Changes take effect after a restart of the jukebox.",
+      "save": "Save",
+      "saved": "Settings saved.",
+      "test": "Test",
+      "test-found": "Jellyfin server found at {{url}}",
+      "test-adopt": "Use this address",
+      "test-not-found": "No Jellyfin server found at any of the tested addresses.",
+      "test-candidates": "Tested addresses:"
     },
     "timers": {
       "option-label-timeslot": "{{value}} min",
