@@ -113,7 +113,7 @@ const AlbumListItem = ({
         });
         // Don't cache a pending marker - a later remount should retry rather than getting
         // stuck showing the placeholder cover forever.
-        if (result && result !== 'CACHE_PENDING') {
+        if (result !== undefined && result !== 'CACHE_PENDING') {
           coverArtCache.set(cacheKey, result);
         }
         applyResult(result);
