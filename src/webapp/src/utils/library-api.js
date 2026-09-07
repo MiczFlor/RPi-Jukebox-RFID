@@ -1,3 +1,5 @@
+import { clearAlbumListCache } from './library-cache';
+
 const LIBRARY_ENDPOINT = '/api/v1/library';
 
 const ACCEPTED_LIBRARY_FILES = [
@@ -83,10 +85,14 @@ const deleteLibraryEntries = (paths) => jsonRequest('/entries', {
   body: JSON.stringify({ paths }),
 });
 
-const refreshLibrary = () => jsonRequest('/refresh', {
-  method: 'POST',
-  body: '',
-});
+const refreshLibrary = async () => {
+  const data = await jsonRequest('/refresh', {
+    method: 'POST',
+    body: '',
+  });
+  clearAlbumListCache();
+  return data;
+};
 
 const uploadLibraryFile = ({
   folder,
