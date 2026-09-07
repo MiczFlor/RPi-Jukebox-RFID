@@ -1,4 +1,4 @@
-import { forwardRef, useContext, useEffect, useState } from 'react';
+import { forwardRef, useContext, useEffect, useRef, useState } from 'react';
 import {
   Link,
   useLocation,
@@ -18,6 +18,44 @@ import noCover from '../../../../../assets/noCover.jpg';
 import AppSettingsContext from '../../../../../context/appsettings/context';
 import request from '../../../../../utils/request';
 
+// Cover art results are cached at module scope so they survive a component remount (e.g.
+// navigating away from and back to the library view) within the same page load - only a full
+// page reload clears it. Keyed by content_uri (stable per-provider item id) when available,
+// falling back to provider+albumartist+album for providers that don't supply one.
+const coverArtCache = new Map();
+
+// The library can list many dozens of albums. Firing a getAlbumCoverArt RPC call for every
+// single one on mount - each opening its own connection, all serialized through the
+// single-threaded RPC server - is what made the library view slow to load. Lazy-load via
+// IntersectionObserver instead, and cap how many fetches run at once so a long scroll still
+// doesn't fire dozens of requests in one burst.
+const MAX_CONCURRENT_COVER_FETCHES = 10;
+let activeCoverFetches = 0;
+const pendingCoverFetchQueue = [];
+
+const runNextQueuedFetch = () => {
+  if (activeCoverFetches >= MAX_CONCURRENT_COVER_FETCHES) return;
+  const next = pendingCoverFetchQueue.shift();
+  if (next) next();
+};
+
+const scheduleCoverFetch = (fetchFn) => new Promise((resolve) => {
+  const task = async () => {
+    activeCoverFetches += 1;
+    try {
+      resolve(await fetchFn());
+    } finally {
+      activeCoverFetches -= 1;
+      runNextQueuedFetch();
+    }
+  };
+  if (activeCoverFetches < MAX_CONCURRENT_COVER_FETCHES) {
+    task();
+  } else {
+    pendingCoverFetchQueue.push(task);
+  }
+});
+
 const AlbumListItem = ({
   albumartist,
   album,
@@ -30,6 +68,7 @@ const AlbumListItem = ({
   const { t } = useTranslation();
   const { search: urlSearch } = useLocation();
   const [coverImage, setCoverImage] = useState(cover_url || noCover);
+  const itemRef = useRef(null);
 
   const {
     settings,
@@ -40,27 +79,50 @@ const AlbumListItem = ({
   } = settings;
 
   useEffect(() => {
-    const getCoverArt = async () => {
-      const { result } = await request('getAlbumCoverArt', {
-        albumartist,
-        album,
-        content_uri,
-        provider,
-      });
-      if (result) {
-        if(result !== 'CACHE_PENDING') {
-          setCoverImage(result.startsWith('http') ? result : `/cover-cache/${result}`);
-        }
-      };
+    setCoverImage(cover_url || noCover);
+    if (cover_url) return undefined;
+    if (!albumartist || !album || !show_covers) return undefined;
+
+    const cacheKey = content_uri || `${provider}:${albumartist}:${album}`;
+
+    const applyResult = (result) => {
+      if (result && result !== 'CACHE_PENDING') {
+        setCoverImage(result.startsWith('http') ? result : `/cover-cache/${result}`);
+      }
+    };
+
+    const cached = coverArtCache.get(cacheKey);
+    if (cached !== undefined) {
+      applyResult(cached);
+      return undefined;
     }
 
-    setCoverImage(cover_url || noCover);
-    if (cover_url) {
-      setCoverImage(cover_url);
-    }
-    else if (albumartist && album && show_covers) {
-      getCoverArt();
-    }
+    const node = itemRef.current;
+    if (!node) return undefined;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+
+      scheduleCoverFetch(async () => {
+        const { result } = await request('getAlbumCoverArt', {
+          albumartist,
+          album,
+          content_uri,
+          provider,
+        });
+        // Don't cache a pending marker - a later remount should retry rather than getting
+        // stuck showing the placeholder cover forever.
+        if (result !== undefined && result !== 'CACHE_PENDING') {
+          coverArtCache.set(cacheKey, result);
+        }
+        applyResult(result);
+        return result;
+      });
+    }, { rootMargin: '200px' });
+
+    observer.observe(node);
+    return () => observer.disconnect();
   }, [albumartist, album, content_uri, cover_url, provider, show_covers]);
 
   const AlbumLink = forwardRef((props, ref) => {
@@ -95,7 +157,7 @@ const AlbumListItem = ({
   );
 
   return (
-    <ListItem disablePadding={isButton} key={content_uri || album}>
+    <ListItem ref={itemRef} disablePadding={isButton} key={content_uri || album}>
       {isButton
         ? (
           <ListItemButton component={AlbumLink} nativeButton={false}>

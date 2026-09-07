@@ -6,7 +6,7 @@ from pathlib import Path
 import hashlib
 import logging
 from queue import Queue
-from threading import Thread
+from threading import Thread, Lock
 import jukebox.cfghandler
 
 COVER_PREFIX = 'cover'
@@ -22,10 +22,19 @@ class CoverartCacheManager:
     def __init__(self):
         coverart_cache_path = cfg.setndefault('webapp', 'coverart_cache_path', value='../../src/webapp/build/cover-cache')
         self.cache_folder_path = Path(coverart_cache_path).expanduser()
+        self._cache_lock = Lock()
+        self._cache_index = {}
+        self._build_cache_index()
         self.write_queue = Queue()
         self.worker_thread = Thread(target=self.process_write_requests)
         self.worker_thread.daemon = True  # Ensure the thread closes with the program
         self.worker_thread.start()
+
+    def _build_cache_index(self):
+        self.cache_folder_path.mkdir(parents=True, exist_ok=True)
+        for path in self.cache_folder_path.iterdir():
+            if path.is_file():
+                self._cache_index[path.stem] = path.name
 
     def generate_cache_key(self, base_filename: str) -> str:
         return f"{COVER_PREFIX}-{hashlib.sha256(base_filename.encode()).hexdigest()}"
@@ -34,11 +43,13 @@ class CoverartCacheManager:
         base_filename = Path(mp3_file_path).stem
         cache_key = self.generate_cache_key(base_filename)
 
-        for path in self.cache_folder_path.iterdir():
-            if path.stem == cache_key:
-                if path.suffix == f".{NO_COVER_ART_EXTENSION}":
-                    return NO_CACHE
-                return path.name
+        with self._cache_lock:
+            cached_name = self._cache_index.get(cache_key)
+
+        if cached_name is not None:
+            if cached_name.endswith(f".{NO_COVER_ART_EXTENSION}"):
+                return NO_CACHE
+            return cached_name
 
         self.save_to_cache(mp3_file_path)
         return CACHE_PENDING
@@ -57,9 +68,12 @@ class CoverartCacheManager:
         cache_filename = f"{cache_key}.{file_extension}"
         full_path = self.cache_folder_path / cache_filename  # Works due to Pathlib
 
-        with full_path.open('wb') as file:
-            file.write(data)
-            logger.debug(f"Created file: {cache_filename}")
+        with self._cache_lock:
+            with full_path.open('wb') as file:
+                file.write(data)
+                logger.debug(f"Created file: {cache_filename}")
+
+            self._cache_index[cache_key] = cache_filename
 
         return cache_filename
 
@@ -102,8 +116,10 @@ class CoverartCacheManager:
             self.write_queue.task_done()
 
     def flush_cache(self):
-        for path in self.cache_folder_path.iterdir():
-            if path.is_file():
-                path.unlink()
-                logger.debug(f"Deleted cached file: {path.name}")
+        with self._cache_lock:
+            for path in self.cache_folder_path.iterdir():
+                if path.is_file():
+                    path.unlink()
+                    logger.debug(f"Deleted cached file: {path.name}")
+            self._cache_index.clear()
         logger.info("Cache flushed successfully.")
