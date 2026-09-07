@@ -22,12 +22,7 @@ class CoverartCacheManager:
     def __init__(self):
         coverart_cache_path = cfg.setndefault('webapp', 'coverart_cache_path', value='../../src/webapp/build/cover-cache')
         self.cache_folder_path = Path(coverart_cache_path).expanduser()
-        # In-memory index (cache_key -> filename) so a lookup is a dict access instead of
-        # re-listing and comparing against every file in the cache folder on every single
-        # coverart request. That linear scan was cheap for a handful of files, but with a
-        # library of any real size (called once per song/album shown in the WebUI) it turned
-        # into a steady, significant CPU cost - see the WebUI-hang investigation.
-        self._index_lock = Lock()
+        self._cache_lock = Lock()
         self._cache_index = {}
         self._build_cache_index()
         self.write_queue = Queue()
@@ -48,7 +43,7 @@ class CoverartCacheManager:
         base_filename = Path(mp3_file_path).stem
         cache_key = self.generate_cache_key(base_filename)
 
-        with self._index_lock:
+        with self._cache_lock:
             cached_name = self._cache_index.get(cache_key)
 
         if cached_name is not None:
@@ -73,11 +68,11 @@ class CoverartCacheManager:
         cache_filename = f"{cache_key}.{file_extension}"
         full_path = self.cache_folder_path / cache_filename  # Works due to Pathlib
 
-        with full_path.open('wb') as file:
-            file.write(data)
-            logger.debug(f"Created file: {cache_filename}")
+        with self._cache_lock:
+            with full_path.open('wb') as file:
+                file.write(data)
+                logger.debug(f"Created file: {cache_filename}")
 
-        with self._index_lock:
             self._cache_index[cache_key] = cache_filename
 
         return cache_filename
@@ -121,10 +116,10 @@ class CoverartCacheManager:
             self.write_queue.task_done()
 
     def flush_cache(self):
-        for path in self.cache_folder_path.iterdir():
-            if path.is_file():
-                path.unlink()
-                logger.debug(f"Deleted cached file: {path.name}")
-        with self._index_lock:
+        with self._cache_lock:
+            for path in self.cache_folder_path.iterdir():
+                if path.is_file():
+                    path.unlink()
+                    logger.debug(f"Deleted cached file: {path.name}")
             self._cache_index.clear()
         logger.info("Cache flushed successfully.")
