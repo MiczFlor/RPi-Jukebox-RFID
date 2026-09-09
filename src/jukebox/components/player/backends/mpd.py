@@ -561,7 +561,9 @@ class PlayerMPD:
     @plugs.tag
     def get_single_coverart(self, song_url):
         mp3_file_path = Path(components.player.get_music_library_path(), song_url).expanduser()
-        cache_filename = self.coverart_cache_manager.get_cache_filename(mp3_file_path)
+        # song_url is relative to the music library root and therefore identifies the
+        # audio file uniquely, which the bare filename does not
+        cache_filename = self.coverart_cache_manager.get_cache_filename(mp3_file_path, song_url)
 
         return cache_filename
 

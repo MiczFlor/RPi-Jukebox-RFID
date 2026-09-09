@@ -1,7 +1,9 @@
 from contextlib import nullcontext
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock, sentinel
 
+import components.player
 import jukebox.publishing as publishing
 
 from components.player.backends.mpd import PlayerMPD
@@ -83,4 +85,18 @@ def test_inactive_backend_does_not_publish_status(monkeypatch):
     publisher.send.assert_called_once_with(
         'playerstatus',
         {'state': 'stop', 'provider': 'mpd'},
+    )
+
+
+def test_get_single_coverart_keys_the_cache_on_the_library_relative_path(monkeypatch):
+    monkeypatch.setattr(components.player, 'get_music_library_path', lambda: '/home/pi/audiofolders')
+    backend = mpd_backend()
+    backend.coverart_cache_manager = Mock()
+    song_url = 'Das Neinhorn/1-01 Kapitel 1.mp3'
+
+    backend.get_single_coverart(song_url)
+
+    backend.coverart_cache_manager.get_cache_filename.assert_called_once_with(
+        Path('/home/pi/audiofolders', song_url),
+        song_url,
     )
