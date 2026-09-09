@@ -1,8 +1,12 @@
+import time
 from pathlib import Path
 from queue import Queue
+from threading import Thread
+from types import SimpleNamespace
 
 import pytest
 
+import components.player.backends.coverart_cache_manager as coverart_cache
 from components.player.backends.coverart_cache_manager import (
     CACHE_PENDING,
     CACHE_SCHEMA_MARKER,
@@ -152,3 +156,52 @@ def test_flushing_keeps_the_schema_marker(cache_folder):
 
     assert not cover.exists()
     assert marker.exists()  # Otherwise the next start would purge the cache all over again
+
+
+@pytest.fixture
+def configured_cache_path(monkeypatch):
+    """Point the config handler at a path of the test's choosing"""
+    def _configure(path):
+        monkeypatch.setattr(
+            coverart_cache,
+            'cfg',
+            SimpleNamespace(setndefault=lambda *args, **kwargs: str(path)),
+        )
+    return _configure
+
+
+def test_a_missing_cache_folder_is_created(tmp_path, configured_cache_path):
+    cache_folder = tmp_path / 'build' / 'cover-cache'
+    cache_folder.parent.mkdir(parents=True)
+    configured_cache_path(cache_folder)
+
+    CoverartCacheManager()
+
+    assert (cache_folder / CACHE_SCHEMA_MARKER).read_text() == CACHE_SCHEMA_VERSION
+
+
+def test_a_cache_path_pointing_nowhere_is_reported_instead_of_created(tmp_path, configured_cache_path, caplog):
+    # A missing parent means the configured path does not point into the Web App, so covers
+    # written there would never be served
+    cache_folder = tmp_path / 'typo' / 'cover-cache'
+    configured_cache_path(cache_folder)
+
+    CoverartCacheManager()
+
+    assert not cache_folder.parent.exists()
+    assert 'is not usable' in caplog.text
+
+
+def test_a_malformed_write_request_does_not_stop_the_worker(cache_folder, library, embedded_artwork):
+    manager = cache_manager(cache_folder)
+    Thread(target=manager.process_write_requests, daemon=True).start()
+    expected_cover = cache_folder / f'{manager.generate_cache_key(BOOK_A)}.jpg'
+
+    manager.write_queue.put('not a write request')
+    manager.write_queue.put((library / BOOK_A, BOOK_A))
+
+    deadline = time.monotonic() + 5
+    while not expected_cover.exists() and time.monotonic() < deadline:
+        time.sleep(0.01)
+
+    assert expected_cover.exists(), 'the worker thread stopped after the malformed request'

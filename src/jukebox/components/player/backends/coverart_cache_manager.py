@@ -27,10 +27,15 @@ class CoverartCacheManager:
         coverart_cache_path = cfg.setndefault('webapp', 'coverart_cache_path', value='../../src/webapp/build/cover-cache')
         self.cache_folder_path = Path(coverart_cache_path).expanduser()
         try:
-            self.cache_folder_path.mkdir(parents=True, exist_ok=True)
+            if not self.cache_folder_path.exists():
+                # Deliberately without parents=True: a missing parent means coverart_cache_path does
+                # not point into the Web App, and covers written there would never be served. Better
+                # to report that than to silently create a folder nobody reads
+                logger.warning(f"Creating missing cover art cache folder {self.cache_folder_path.resolve()}")
+                self.cache_folder_path.mkdir(exist_ok=True)
             self._migrate_cache()
         except OSError as e:
-            logger.error(f"Could not prepare cover art cache folder {self.cache_folder_path}: {e}")
+            logger.error(f"Cover art cache folder {self.cache_folder_path.resolve()} is not usable: {e}")
         self.write_queue = Queue()
         self.worker_thread = Thread(target=self.process_write_requests)
         self.worker_thread.daemon = True  # Ensure the thread closes with the program
@@ -109,9 +114,9 @@ class CoverartCacheManager:
 
     def process_write_requests(self):
         while True:
-            mp3_file_path, cache_id = self.write_queue.get()
+            request = self.write_queue.get()
             try:
-                self._save_to_cache(mp3_file_path, cache_id)
+                self._save_to_cache(*request)
             except Exception as e:
                 logger.error(f"Error processing write request: {e}")
             self.write_queue.task_done()
