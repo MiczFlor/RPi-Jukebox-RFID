@@ -21,6 +21,25 @@ A backend may implement `set_active(active)`. The coordinator calls it whenever
 selection changes so polling backends can publish `playerstatus` only while
 active. Status payloads must include the backend identifier as `provider`.
 
+## Playback That Outlives The Backend
+
+Playback can survive the daemon: MPD restores its queue across a restart, so
+content of a backend can already be playing when the daemon starts. That
+content is reported by the backend that owns it — only that backend knows
+its metadata and its artwork, and the Web App routes the cover lookup by the
+`provider` of the published status. Such a backend checks for its content
+after start-up and hands the status over:
+
+```python
+coordinator.adopt_backend('streaming')
+```
+
+`adopt_backend()` calls `set_active()` on the new and on the previous backend
+like a selection does, but it does not stop the previous backend: the running
+playback is taken over, not replaced. The check belongs in the background,
+because at start-up neither the audio transport nor a remote server is
+guaranteed to answer yet.
+
 ## Playback Contract
 
 Provider-aware calls keep the existing command names:

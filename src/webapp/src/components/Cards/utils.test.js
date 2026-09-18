@@ -66,3 +66,27 @@ test('player card contracts preserve provider-qualified content', () => {
     undefined,
   ]);
 });
+
+test('jellyfin card contracts preserve stable URIs and the provider', () => {
+  const albumAction = buildActionData('play_music', 'play_album', {
+    albumartist: 'Artist One',
+    album: 'Album One',
+    content_uri: 'service:jellyfin:album:album-1',
+    provider: 'jellyfin',
+  });
+  expect(getArgsValues(albumAction)).toEqual([
+    'Artist One',
+    'Album One',
+    'service:jellyfin:album:album-1',
+    'jellyfin',
+  ]);
+
+  const trackAction = buildActionData('play_music', 'play_single', {
+    song_url: 'service:jellyfin:track:track-1',
+    provider: 'jellyfin',
+  });
+  expect(getArgsValues(trackAction)).toEqual([
+    'service:jellyfin:track:track-1',
+    'jellyfin',
+  ]);
+});

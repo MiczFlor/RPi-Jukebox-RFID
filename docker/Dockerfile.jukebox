@@ -1,4 +1,4 @@
-FROM debian:trixie-slim
+FROM debian:trixie-slim AS jukebox-base
 
 # These are only dependencies that are required to get as close to the
 # Raspberry Pi environment as possible.
@@ -72,3 +72,25 @@ RUN pip install --no-cache-dir --upgrade setuptools wheel \
 
 EXPOSE 5555 5556 5558
 WORKDIR ${INSTALLATION_PATH}/src/jukebox
+
+FROM jukebox-base AS python-tests
+
+ARG USER
+USER root
+RUN apt-get update && apt-get install -y \
+    libczmq-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+USER ${USER}
+WORKDIR ${INSTALLATION_PATH}
+RUN pip install --no-cache-dir -r requirements-dev.txt \
+    && pip install --no-cache-dir \
+      -r src/jukebox/components/rfid/hardware/fake_reader_gui/requirements.txt \
+      -r src/jukebox/components/rfid/hardware/pn532_i2c_py532/requirements.txt \
+      -r src/jukebox/components/rfid/hardware/rdm6300_serial/requirements.txt \
+      -r src/jukebox/components/rfid/hardware/rc522_spi/requirements.txt
+CMD ["./run_pytest.sh"]
+
+FROM jukebox-base AS runtime

@@ -5,7 +5,9 @@
 .DS_Store
 
 # Application
-docker
+docker/*
+!docker/Dockerfile.librespot
+!docker/Dockerfile.librespot-build
 docs
 shared
 .venv

@@ -93,6 +93,43 @@ playermpd:
   stopped_prev_action: prev
   # Must be one of: 'none', 'next', 'rewind':
   stopped_next_action: next
+players:
+  spotify:
+    # Requires Premium, a user-owned Spotify developer app, and librespot.
+    enabled: false
+    client_id: ''
+    # Must exactly match a redirect URI configured in the Spotify developer app.
+    redirect_uri: ''
+    device_name: Phoniebox
+    token_file: ../../shared/settings/spotify_tokens.json
+    library_file: ../../shared/settings/spotify_library.json
+  jellyfin:
+    # Activate by setting enabled to true. The Jellyfin player backend
+    # streams audio through MPD, so no extra playback daemon is installed.
+    enabled: false
+    # Full URL to your Jellyfin server (12.0 or newer).
+    host: ''
+    # Credentials of a Jellyfin user. The login token inherits that user's
+    # library permissions, so a dedicated user with access to the music
+    # library is recommended. Stored directly in jukebox.yaml.
+    username: ''
+    password: ''
+    # Stores the access token, the identity it was issued for and the Jellyfin
+    # device id (written atomically, owner-only permissions). Reusing the token
+    # keeps the device entry and stream URLs that are still queued in MPD valid
+    # across restarts.
+    token_file: ../../shared/settings/jellyfin_token.json
+    # Jellyfin device id of this Phoniebox. Empty generates one on first use
+    # and stores it in token_file. Set it explicitly when several boxes share
+    # the same Jellyfin user, or on a cloned SD card image.
+    device_id: ''
+    # Seconds the album catalog is cached before a refresh. Larger values
+    # reduce Jellyfin load on a Raspberry Pi; new/removed albums are only
+    # picked up after the cache expires.
+    catalog_cache_ttl: 300
+    # Seconds to wait for a response from the Jellyfin server before a
+    # request is considered failed.
+    request_timeout: 30
 rpc:
   tcp_port: 5555
 api:

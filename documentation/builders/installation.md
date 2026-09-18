@@ -37,6 +37,10 @@ Choose a version, run the corresponding install command in your SSH terminal and
 
 After a successful installation, [configure your Phoniebox](configuration.md).
 
+Spotify is an optional installer component. Before enabling it, create a
+Spotify developer app and choose the OAuth redirect URI for the Phoniebox.
+See the [Spotify setup guide](spotify.md#physical-phoniebox-setup).
+
 > [!TIP]
 > Depending on your hardware, this installation might last around 60 minutes (usually it's faster, 20-30 min). It refreshes the package index, installs Phoniebox dependencies and applies settings. Be patient and don't let your computer go to sleep. It might disconnect your SSH connection causing the interruption of the installation process. Consider starting the installation in a terminal multiplexer like 'screen' or 'tmux' to avoid this.
 

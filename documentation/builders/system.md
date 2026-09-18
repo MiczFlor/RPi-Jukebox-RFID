@@ -4,7 +4,7 @@ A few words on how the system is setup and interacts.
 
 The system consists of
 
-1. [Music Player Daemon (MPD)](system.md#music-player-daemon-mpd) which we use for all music playback (local, stream, podcast, ...)
+1. [Music Player Daemon (MPD)](system.md#music-player-daemon-mpd) for local files, streams, and podcasts, with optional [Spotify](spotify.md) playback through librespot
 2. [Audio (PipeWire)](system.md#audio-pipewire) for flexible audio output support
 3. [Jukebox Core Service](system.md#jukebox-core-service) for controlling MPD and the audio outputs and providing all the features
 4. [Web App](system.md#web-app-ui) as User Interface (UI) for a web browser

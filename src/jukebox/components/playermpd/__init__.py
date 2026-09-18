@@ -5,6 +5,7 @@ import jukebox.plugs as plugs
 from components.player import play_card_callbacks
 from components.player.backends.mpd import MpdLock, PlayerMPD
 from components.player.mpd_plugin import initialize_mpd_player
+from components.player.spotify_plugin import configure_spotify
 
 
 player_ctrl = None
@@ -14,6 +15,7 @@ player_ctrl = None
 def initialize():
     global player_ctrl
     player_ctrl = initialize_mpd_player(__name__)
+    configure_spotify(player_ctrl)
 
 
 @plugs.atexit

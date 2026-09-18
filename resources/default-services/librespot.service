@@ -1,0 +1,21 @@
+[Unit]
+Description=Phoniebox Spotify Connect receiver
+Documentation=https://github.com/librespot-org/librespot
+After=network-online.target pipewire-pulse.service
+Wants=network-online.target
+Requires=pipewire-pulse.service
+
+[Service]
+ExecStart=%h/.local/bin/librespot \
+    --name "%%SPOTIFY_DEVICE_NAME%%" \
+    --backend pulseaudio \
+    --bitrate 320 \
+    --cache %h/.cache/librespot \
+    --cache-size-limit 1G \
+    --system-cache %h/.cache/librespot \
+    --volume-ctrl fixed
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

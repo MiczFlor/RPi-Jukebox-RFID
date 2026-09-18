@@ -15,12 +15,13 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=true
 # Run installation (in interactive mode)
 # y - start setup
 # n - use static ip
-# n - deactivate ipv6
 # y - setup autohotspot
 # n -   change default configuration
 # n - deactivate bluetooth
 # n - disable on-chip audio
 # - - mpd overwrite config (only with existing installation)
+# n - setup Spotify
+# n - setup jellyfin
 # n - setup rfid reader
 # y - setup samba
 # y - setup webapp
@@ -30,8 +31,9 @@ export ENABLE_WEBAPP_PROD_DOWNLOAD=true
 
 "${LOCAL_INSTALL_SCRIPT_PATH}/install-jukebox.sh" <<< 'y
 n
-n
 y
+n
+n
 n
 n
 n

@@ -53,6 +53,27 @@ def test_album_catalog_adds_provider_metadata():
     assert backend.list_library_items(['playlist']) == []
 
 
+def test_clear_playlist_clears_mpd_queue():
+    backend = mpd_backend()
+    backend.mpd_lock = nullcontext()
+    backend.mpd_client = SimpleNamespace(clear=Mock())
+
+    backend.clear_playlist()
+
+    backend.mpd_client.clear.assert_called_once_with()
+
+
+def test_add_to_playlist_appends_uri_without_clearing():
+    backend = mpd_backend()
+    backend.mpd_lock = nullcontext()
+    backend.mpd_client = SimpleNamespace(clear=Mock(), addid=Mock())
+
+    backend.add_to_playlist('http://example.com/song.mp3')
+
+    backend.mpd_client.addid.assert_called_once_with('http://example.com/song.mp3')
+    backend.mpd_client.clear.assert_not_called()
+
+
 def test_inactive_backend_does_not_publish_status(monkeypatch):
     publisher = Mock()
     monkeypatch.setattr(publishing, 'get_publisher', Mock(return_value=publisher))

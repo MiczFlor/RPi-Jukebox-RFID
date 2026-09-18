@@ -186,6 +186,11 @@ The Dockerfile is defined to start all Phoniebox related services.
 
 Open <http://localhost:3000> in your browser to see the Web App.
 
+Spotify is available through the optional `spotify` Compose profile and
+requires two authorization steps. See the
+[Docker Spotify setup](../builders/spotify.md#docker-development-setup) for
+host-specific commands, audio setup, and credential persistence.
+
 While the `webapp` container does not require a reload while working on
 it (hot-reload is enabled), you will have to restart your `jukebox`
 container whenever you make a change (in the Python code). Instead of

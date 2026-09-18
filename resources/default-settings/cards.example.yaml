@@ -66,3 +66,12 @@
       alias: change_volume
       args: -3
       ignore_card_removal_action: true
+# Playback cards for an additional media provider (e.g. Jellyfin). The
+# provider must match a registered player backend; the value is the stable
+# content URI of the album or single track.
+'J1':
+      provider: jellyfin
+      value: "service:jellyfin:album:<itemid>"
+'J2':
+      provider: jellyfin
+      value: "service:jellyfin:track:<itemid>"
