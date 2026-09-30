@@ -204,13 +204,22 @@ function arrayPregDiff($a, $p) {
 	return $a;
 }
 
-function startsWith($haystack, $needle) {
-     $length = strlen($needle);
-     return (substr($haystack, 0, $length) === $needle);
+function startsWith($haystack, $needle): bool
+{
+    if ($needle === '' || $haystack === null) {
+        return false;
+    }
+    $length = strlen($needle);
+    return (substr($haystack, 0, $length) === $needle);
 }
-function endsWith($haystack, $needle) {
-     $length = strlen($needle);
-     return (substr($haystack, ($length * -1), $length) === $needle);
+
+function endsWith($haystack, $needle): bool
+{
+    if ($needle === '' || $haystack === null) {
+        return false;
+    }
+    $length = strlen($needle);
+    return (substr($haystack, -$length) === $needle);
 }
 
 function replaceUmlaute($string) {

@@ -56,7 +56,7 @@ function handleGet() {
     $statusCommand = "status\ncurrentsong\nclose";
     $commandResponseList = execMPDCommand($statusCommand);
     $responseList = array();
-    forEach ($commandResponseList as $commandResponse) {
+    foreach ($commandResponseList as $commandResponse) {
         preg_match("/(?P<key>.+?): (?P<value>.*)/", $commandResponse, $match);
         if ($match) {
             $responseList[strtolower($match['key'])] = $match['value'];

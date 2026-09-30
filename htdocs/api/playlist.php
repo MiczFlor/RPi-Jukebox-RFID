@@ -31,7 +31,7 @@ function handleGet() {
     $playList = array();
     $albumLength = 0;
     $track = array();
-    forEach($playListInfoResponse as $index => $record ) {
+    foreach($playListInfoResponse as $index => $record ) {
         preg_match("/(?P<key>.+?): (?P<value>.*)/", $record, $match);
         if ($match) {
             $key = strtolower($match['key']);
