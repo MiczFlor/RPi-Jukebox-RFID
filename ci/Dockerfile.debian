@@ -7,6 +7,12 @@ ARG DEBIAN_CODENAME
 ENV DOCKER_RUNNING=true
 
 RUN export DEBIAN_FRONTEND=noninteractive \
+  && if [ "${DEBIAN_CODENAME}" = "bullseye" ]; then \
+    find /etc/apt -type f \( -name '*.list' -o -name '*.sources' \) -exec sed -i \
+      -e 's|security.debian.org/debian-security|archive.debian.org/debian-security|g' \
+      -e 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g' {} + \
+    && echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99archive; \
+  fi \
   && echo "--- install packages (1) ---" \
   && apt-get update \
   && apt-get -y install \
