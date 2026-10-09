@@ -41,8 +41,8 @@ _jukebox_webapp_download() {
   bundle_name="webapp-build-${git_head_hash_short}.tar.gz"
   source_development_url="https://github.com/${GIT_USER}/${GIT_REPO_NAME}/releases/download/${WEBAPP_DEVELOPMENT_RELEASE_TAG}/${bundle_name}"
   source_release_url="https://github.com/${GIT_USER}/${GIT_REPO_NAME}/releases/download/v${jukebox_version}/${bundle_name}"
-  upstream_development_url="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}/releases/download/${WEBAPP_DEVELOPMENT_RELEASE_TAG}/${bundle_name}"
-  upstream_release_url="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}/releases/download/v${jukebox_version}/${bundle_name}"
+  upstream_development_url="https://github.com/${GIT_UPSTREAM_USER}/${GIT_UPSTREAM_REPO_NAME}/releases/download/${WEBAPP_DEVELOPMENT_RELEASE_TAG}/${bundle_name}"
+  upstream_release_url="https://github.com/${GIT_UPSTREAM_USER}/${GIT_UPSTREAM_REPO_NAME}/releases/download/v${jukebox_version}/${bundle_name}"
   git_user_normalized=$(printf '%s' "${GIT_USER}" | tr '[:upper:]' '[:lower:]')
   git_upstream_user_normalized=$(printf '%s' "${GIT_UPSTREAM_USER}" | tr '[:upper:]' '[:lower:]')
 
