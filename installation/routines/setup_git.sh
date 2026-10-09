@@ -16,9 +16,9 @@ _git_add_upstream_remote() {
   fi
 
   if [[ "$GIT_USE_SSH" == true ]]; then
-    git remote add upstream "git@github.com:${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git"
+    git remote add upstream "git@github.com:${GIT_UPSTREAM_USER}/${GIT_UPSTREAM_REPO_NAME}.git"
   else
-    git remote add upstream "https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git"
+    git remote add upstream "https://github.com/${GIT_UPSTREAM_USER}/${GIT_UPSTREAM_REPO_NAME}.git"
   fi
 }
 
@@ -63,7 +63,7 @@ _git_convert_tardir_git_repo() {
 * Did you forget to upload the ssh key for this machine to GitHub?
 * Defaulting to HTTPS protocol. You can change back to SSH later with
 * git remote set-url origin git@github.com:${GIT_USER}/${GIT_REPO_NAME}.git
-* git remote set-url upstream git@github.com:${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}.git\n"
+* git remote set-url upstream git@github.com:${GIT_UPSTREAM_USER}/${GIT_UPSTREAM_REPO_NAME}.git\n"
 
       git remote remove origin
       GIT_USE_SSH=false

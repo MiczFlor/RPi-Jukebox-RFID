@@ -14,6 +14,7 @@ trap 'rm -rf "${TEST_ROOT}"' EXIT
 INSTALLATION_PATH="${TEST_ROOT}/RPi-Jukebox-RFID"
 GIT_REPO_NAME="RPi-Jukebox-RFID"
 GIT_UPSTREAM_USER="MiczFlor"
+GIT_UPSTREAM_REPO_NAME="RPi-Jukebox-RFID"
 GIT_USER="contributor"
 TEST_COMMIT="0123456789abcdef0123456789abcdef01234567"
 TEST_VERSION="3.7.0-alpha"
@@ -82,9 +83,9 @@ assert_attempts() {
 BUNDLE_NAME="webapp-build-${TEST_COMMIT:0:10}.tar.gz"
 SOURCE_DEVELOPMENT_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}/releases/download/${WEBAPP_DEVELOPMENT_RELEASE_TAG}/${BUNDLE_NAME}"
 SOURCE_RELEASE_URL="https://github.com/${GIT_USER}/${GIT_REPO_NAME}/releases/download/v${TEST_VERSION}/${BUNDLE_NAME}"
-UPSTREAM_DEVELOPMENT_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}/releases/download/${WEBAPP_DEVELOPMENT_RELEASE_TAG}/${BUNDLE_NAME}"
-UPSTREAM_RELEASE_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}/releases/download/v${TEST_VERSION}/${BUNDLE_NAME}"
-MISMATCHED_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_REPO_NAME}/releases/download/${WEBAPP_DEVELOPMENT_RELEASE_TAG}/webapp-build-deadbeef00.tar.gz"
+UPSTREAM_DEVELOPMENT_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_UPSTREAM_REPO_NAME}/releases/download/${WEBAPP_DEVELOPMENT_RELEASE_TAG}/${BUNDLE_NAME}"
+UPSTREAM_RELEASE_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_UPSTREAM_REPO_NAME}/releases/download/v${TEST_VERSION}/${BUNDLE_NAME}"
+MISMATCHED_URL="https://github.com/${GIT_UPSTREAM_USER}/${GIT_UPSTREAM_REPO_NAME}/releases/download/${WEBAPP_DEVELOPMENT_RELEASE_TAG}/webapp-build-deadbeef00.tar.gz"
 
 # Prefer the source repository's exact development bundle.
 ENABLE_WEBAPP_PROD_DOWNLOAD=true
@@ -100,6 +101,16 @@ assert_attempts \
     "${SOURCE_DEVELOPMENT_URL}" \
     "${SOURCE_RELEASE_URL}" \
     "${UPSTREAM_DEVELOPMENT_URL}"
+
+# A renamed fork keeps the upstream fallback on the canonical repository.
+GIT_REPO_NAME="phoniebox"
+reset_download "${UPSTREAM_DEVELOPMENT_URL}"
+_jukebox_webapp_download
+assert_attempts \
+    "https://github.com/${GIT_USER}/${GIT_REPO_NAME}/releases/download/${WEBAPP_DEVELOPMENT_RELEASE_TAG}/${BUNDLE_NAME}" \
+    "https://github.com/${GIT_USER}/${GIT_REPO_NAME}/releases/download/v${TEST_VERSION}/${BUNDLE_NAME}" \
+    "${UPSTREAM_DEVELOPMENT_URL}"
+GIT_REPO_NAME="RPi-Jukebox-RFID"
 
 # Release-only mode skips development bundles.
 GIT_USER="MiczFlor"
