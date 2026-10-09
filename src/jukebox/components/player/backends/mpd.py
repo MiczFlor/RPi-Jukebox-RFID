@@ -690,10 +690,13 @@ class PlayerMPD:
 
         current_folder = self._get_current_folder(folders)
         if current_folder is None:
-            logger.warning('Could not determine current folder')
-            return None
-
-        current_index = folders.index(current_folder)
+            if direction == FolderNavigation.PREV:
+                logger.warning('Not able to go PREV, no current folder found')
+                return None
+            current_index = -1
+        else:
+            current_index = folders.index(current_folder)
+            
         step = 1 if direction == FolderNavigation.NEXT else -1
         next_index = current_index + step
 
