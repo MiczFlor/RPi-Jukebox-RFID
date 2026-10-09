@@ -652,14 +652,14 @@ class PlayerMPD:
             self.mpd_retry_with_mutex(self.mpd_client.findadd, 'albumartist', albumartist, 'album', album)
             self.mpd_client.play()
 
-    def _get_sorted_folders(self):
+    def _get_folders(self):
         """
-        Return a flat, alphabetically sorted list of all directories in the MPD library.
+        Return a flat list of all directories in the MPD library.
         """
         with self.mpd_lock:
             raw_list = self.mpd_client.listall()
         folders = [entry['directory'] for entry in raw_list if 'directory' in entry]
-        return sorted(folders)
+        return folders
 
     def _get_current_folder(self, folders):
         """
@@ -671,31 +671,21 @@ class PlayerMPD:
             current_folder = str(Path(current_file).parent)
             if current_folder in folders:
                 return current_folder
-        return folders[0] if folders else None
-
-    def _is_shuffle_active(self):
-        """
-        Check if MPD random/shuffle mode is active.
-        """
-        return self.mpd_status.get('random') in (1, '1', True)
+        return None
 
     def _play_next_folder(self, direction: FolderNavigation):
         """
-        Internal helper to play the next or previous folder.
+        Play the next or previous folder in the MPD library.
 
-        In normal mode this selects the alphabetically next/previous folder.
-        In shuffle mode only next is supported and selects a random folder.
+        Folders are returned in their natural MPD order without sorting or shuffling.
+        At the first or last folder, navigation stops instead of wrapping around.
 
         :param direction: FolderNavigation.NEXT or FolderNavigation.PREV
         :return: The folder that is now playing or None
         """
-        folders = self._get_sorted_folders()
+        folders = self._get_folders()
         if not folders:
             logger.warning('No folders found to navigate')
-            return None
-
-        if self._is_shuffle_active() and direction == FolderNavigation.PREV:
-            logger.debug('Skipping previous folder action while shuffle is active')
             return None
 
         current_folder = self._get_current_folder(folders)
@@ -703,29 +693,26 @@ class PlayerMPD:
             logger.warning('Could not determine current folder')
             return None
 
-        if self._is_shuffle_active():
-            candidates = [f for f in folders if f != current_folder]
-            if not candidates:
-                return None
-            next_folder = random.choice(candidates)
-        else:
-            current_index = folders.index(current_folder)
-            step = 1 if direction == FolderNavigation.NEXT else -1
-            next_index = (current_index + step) % len(folders)
-            next_folder = folders[next_index]
+        current_index = folders.index(current_folder)
+        step = 1 if direction == FolderNavigation.NEXT else -1
+        next_index = current_index + step
 
+        if next_index >= len(folders) or next_index < 0:
+            return None
+
+        next_folder = folders[next_index]
         logger.info(f"Playing {direction.value} folder: {next_folder}")
         self.play_folder(next_folder)
         return next_folder
 
     @plugs.tag
     def play_next_folder(self):
-        """Play the next folder in alphabetical order or a random folder when shuffle is active."""
+        """Play the next folder in natural MPD order. Does nothing at the last folder."""
         return self._play_next_folder(FolderNavigation.NEXT)
 
     @plugs.tag
     def play_prev_folder(self):
-        """Play the previous folder in alphabetical order. Does nothing when shuffle is active."""
+        """Play the previous folder in natural MPD order. Does nothing at the first folder."""
         return self._play_next_folder(FolderNavigation.PREV)
 
     @plugs.tag
