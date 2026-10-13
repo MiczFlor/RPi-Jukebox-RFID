@@ -87,6 +87,8 @@ import threading
 import logging
 import time
 import functools
+import random
+from enum import Enum
 from pathlib import Path
 import components.player
 import jukebox.cfghandler
@@ -101,6 +103,12 @@ from .coverart_cache_manager import CoverartCacheManager
 
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+
+
+class FolderNavigation(Enum):
+    """Direction enum for folder navigation commands."""
+    NEXT = 'next'
+    PREV = 'prev'
 
 
 class MpdLock:
@@ -643,6 +651,93 @@ class PlayerMPD:
             self.mpd_client.clear()
             self.mpd_retry_with_mutex(self.mpd_client.findadd, 'albumartist', albumartist, 'album', album)
             self.mpd_client.play()
+
+    def _get_folders(self):
+        """
+        Return a flat list of all directories in the music library.
+
+        Unlike MPD's listall, this includes folders that contain only
+        special files such as livestream.txt or podcast.txt.
+        """
+        music_library_path = os.path.expanduser(components.player.get_music_library_path())
+        try:
+            entries = os.scandir(music_library_path)
+        except FileNotFoundError:
+            logger.error(f'Music library path not found: {music_library_path}')
+            return []
+        except NotADirectoryError:
+            logger.error(f'Music library path is not a directory: {music_library_path}')
+            return []
+
+        folders = [entry.name for entry in entries if entry.is_dir(follow_symlinks=True)]
+        return folders
+
+    def _get_current_folder(self, folders):
+        """
+        Determine the current folder from the currently playing file.
+        Falls back to the last played folder stored by play_folder.
+        """
+        current_file = self.mpd_status.get('file')
+        if current_file:
+            current_folder = str(Path(current_file).parent)
+            if current_folder in folders:
+                return current_folder
+
+        last_played = self.music_player_status.get('player_status', {}).get('last_played_folder')
+        if last_played and last_played in folders:
+            return last_played
+
+        return None
+
+    def _play_next_folder(self, direction: FolderNavigation):
+        """
+        Play the next or previous folder in the MPD library.
+
+        Folders are returned in their natural MPD order without sorting or shuffling.
+        At the first or last folder, navigation stops instead of wrapping around.
+
+        :param direction: FolderNavigation.NEXT or FolderNavigation.PREV
+        :return: The folder that is now playing or None
+        """
+        folders = self._get_folders()
+        logger.warning(f'FOLDER NAV: total={len(folders)}, folders={folders}')
+        logger.warning(f'FOLDER NAV: mpd_status file={self.mpd_status.get("file")}, state={self.mpd_status.get("state")}')
+        if not folders:
+            logger.warning('No folders found to navigate')
+            return None
+
+        current_folder = self._get_current_folder(folders)
+        logger.warning(f'FOLDER NAV: current_folder={current_folder}')
+        if current_folder is None:
+            if direction == FolderNavigation.PREV:
+                logger.warning('Not able to go PREV, no current folder found')
+                return None
+            current_index = -1
+        else:
+            current_index = folders.index(current_folder)
+            
+        step = 1 if direction == FolderNavigation.NEXT else -1
+        next_index = current_index + step
+        logger.warning(f'FOLDER NAV: current_index={current_index}, next_index={next_index}, direction={direction.value}')
+
+        if next_index >= len(folders) or next_index < 0:
+            logger.warning(f'FOLDER NAV: boundary reached, next_index={next_index}, len={len(folders)}')
+            return None
+
+        next_folder = folders[next_index]
+        logger.warning(f"Playing {direction.value} folder: {next_folder}")
+        self.play_folder(next_folder)
+        return next_folder
+
+    @plugs.tag
+    def play_next_folder(self):
+        """Play the next folder in natural MPD order. Does nothing at the last folder."""
+        return self._play_next_folder(FolderNavigation.NEXT)
+
+    @plugs.tag
+    def play_prev_folder(self):
+        """Play the previous folder in natural MPD order. Does nothing at the first folder."""
+        return self._play_next_folder(FolderNavigation.PREV)
 
     @plugs.tag
     def queue_load(self, folder):
