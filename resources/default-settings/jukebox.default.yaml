@@ -19,6 +19,7 @@ modules:
     bluetooth_audio_buttons: controls.bluetooth_audio_buttons
     gpio: gpio.gpioz.plugin
     sync_rfidcards: synchronisation.rfidcards
+    display: display
   others:
   - misc
 pulse:
@@ -155,9 +156,22 @@ speaking_text:
 sync_rfidcards:
   enable: false
   config_file: ../../shared/settings/sync_rfidcards.yaml
+ledstrip:
+  # Enable the LED strip plugin (requires a Raspberry Pi Pico over USB-Serial)
+  enable: false
+  port: /dev/ttyACM0
+  # Optional: override default effects per event
+  # effects:
+  #   play: fill 0 255 0
+  #   pause: fill 255 165 0
+  #   stop: off
+
 webapp:
   coverart_cache_path: ../../src/webapp/build/cover-cache
   # Load cover arts in Webapp. Change to false in case you have performance issue
   # when handling a lot of music
   # Defaults to true
   show_covers: true
+display:
+  enable: false
+  config_file: ../../shared/settings/display.yaml

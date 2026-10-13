@@ -87,6 +87,8 @@ import threading
 import logging
 import time
 import functools
+import random
+from enum import Enum
 from pathlib import Path
 import components.player
 import jukebox.cfghandler
@@ -101,6 +103,12 @@ from .coverart_cache_manager import CoverartCacheManager
 
 logger = logging.getLogger('jb.PlayerMPD')
 cfg = jukebox.cfghandler.get_handler('jukebox')
+
+
+class FolderNavigation(Enum):
+    """Direction enum for folder navigation commands."""
+    NEXT = 'next'
+    PREV = 'prev'
 
 
 class MpdLock:
@@ -135,6 +143,12 @@ class MpdLock:
 
     def locked(self):
         return self._lock.locked()
+
+
+# Fields that MPD's currentsong command provides per song/stream.
+# These must be reset before each poll, because streams may not re-send them
+# and we don't want stale metadata from the previous track to persist.
+_VOLATILE_SONG_FIELDS = ('title', 'artist', 'album', 'albumartist', 'track', 'date', 'genre', 'name', 'composer', 'performer')
 
 
 class PlayerMPD:
@@ -282,8 +296,18 @@ class PlayerMPD:
         this method polls the status from mpd and stores the important inforamtion in the music_player_status,
         it will repeat itself in the intervall specified by self.mpd_status_poll_interval
         """
+        # Clear volatile song metadata so that streams/radio do not show stale info
+        # from the previous track when MPD does not re-send these fields.
+        for key in _VOLATILE_SONG_FIELDS:
+            self.mpd_status.pop(key, None)
+
         self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.status))
         self.mpd_status.update(self.mpd_retry_with_mutex(self.mpd_client.currentsong))
+
+        # For streams, MPD often provides a 'name' field instead of 'title'.
+        # Use it as a fallback so the display/web UI can show something meaningful.
+        if not self.mpd_status.get('title') and self.mpd_status.get('name'):
+            self.mpd_status['title'] = self.mpd_status['name']
 
         if self.mpd_status.get('elapsed') is not None:
             self.current_folder_status["ELAPSED"] = self.mpd_status['elapsed']
@@ -643,6 +667,82 @@ class PlayerMPD:
             self.mpd_client.clear()
             self.mpd_retry_with_mutex(self.mpd_client.findadd, 'albumartist', albumartist, 'album', album)
             self.mpd_client.play()
+
+    def _get_sorted_folders(self):
+        """
+        Return a flat, alphabetically sorted list of all directories in the MPD library.
+        """
+        with self.mpd_lock:
+            raw_list = self.mpd_client.listall()
+        folders = [entry['directory'] for entry in raw_list if 'directory' in entry]
+        return sorted(folders)
+
+    def _get_current_folder(self, folders):
+        """
+        Determine the current folder from the currently playing file.
+        Falls back to the first folder if no match is found.
+        """
+        current_file = self.mpd_status.get('file')
+        if current_file:
+            current_folder = str(Path(current_file).parent)
+            if current_folder in folders:
+                return current_folder
+        return folders[0] if folders else None
+
+    def _is_shuffle_active(self):
+        """
+        Check if MPD random/shuffle mode is active.
+        """
+        return self.mpd_status.get('random') in (1, '1', True)
+
+    def _play_next_folder(self, direction: FolderNavigation):
+        """
+        Internal helper to play the next or previous folder.
+
+        In normal mode this selects the alphabetically next/previous folder.
+        In shuffle mode only next is supported and selects a random folder.
+
+        :param direction: FolderNavigation.NEXT or FolderNavigation.PREV
+        :return: The folder that is now playing or None
+        """
+        folders = self._get_sorted_folders()
+        if not folders:
+            logger.warning('No folders found to navigate')
+            return None
+
+        if self._is_shuffle_active() and direction == FolderNavigation.PREV:
+            logger.debug('Skipping previous folder action while shuffle is active')
+            return None
+
+        current_folder = self._get_current_folder(folders)
+        if current_folder is None:
+            logger.warning('Could not determine current folder')
+            return None
+
+        if self._is_shuffle_active():
+            candidates = [f for f in folders if f != current_folder]
+            if not candidates:
+                return None
+            next_folder = random.choice(candidates)
+        else:
+            current_index = folders.index(current_folder)
+            step = 1 if direction == FolderNavigation.NEXT else -1
+            next_index = (current_index + step) % len(folders)
+            next_folder = folders[next_index]
+
+        logger.info(f"Playing {direction.value} folder: {next_folder}")
+        self.play_folder(next_folder)
+        return next_folder
+
+    @plugs.tag
+    def play_next_folder(self):
+        """Play the next folder in alphabetical order or a random folder when shuffle is active."""
+        return self._play_next_folder(FolderNavigation.NEXT)
+
+    @plugs.tag
+    def play_prev_folder(self):
+        """Play the previous folder in alphabetical order. Does nothing when shuffle is active."""
+        return self._play_next_folder(FolderNavigation.PREV)
 
     @plugs.tag
     def queue_load(self, folder):

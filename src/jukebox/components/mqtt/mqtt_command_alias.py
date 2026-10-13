@@ -118,6 +118,8 @@ _player_cmds = {
     Mqtt_Commands.PAUSE.value: {"rpc": "pause"},
     Mqtt_Commands.NEXT_SONG.value: {"rpc": "next_song"},
     Mqtt_Commands.PREV_SONG.value: {"rpc": "prev_song"},
+    Mqtt_Commands.PLAY_NEXT_FOLDER.value: {"rpc": "play_next_folder"},
+    Mqtt_Commands.PLAY_PREV_FOLDER.value: {"rpc": "play_prev_folder"},
     Mqtt_Commands.STOP.value: {
         "rpc": {
             "package": "player",

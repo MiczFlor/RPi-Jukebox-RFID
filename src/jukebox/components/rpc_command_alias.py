@@ -58,6 +58,20 @@ cmd_alias_definitions = {
         'plugin': 'ctrl',
         'method': 'prev',
         'ignore_card_removal_action': True},
+    'play_next_folder': {
+        'title': 'Play the next folder in alphabetical order',
+        'note': 'In shuffle mode this selects a random folder',
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'play_next_folder',
+        'ignore_card_removal_action': True},
+    'play_prev_folder': {
+        'title': 'Play the previous folder in alphabetical order',
+        'note': 'Does nothing when shuffle is active',
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'play_prev_folder',
+        'ignore_card_removal_action': True},
     'toggle': {
         'package': 'player',
         'plugin': 'ctrl',
@@ -78,7 +92,13 @@ cmd_alias_definitions = {
     'flush_coverart_cache': {
         'package': 'player',
         'plugin': 'ctrl',
-        'method': 'flush_coverart_cache'},
+        'method': 'flush_coverart_cache'    
+    },    
+    'stop': {
+        'package': 'player',
+        'plugin': 'ctrl',
+        'method': 'stop',
+        'ignore_card_removal_action': True},
 
     # VOLUME
     'set_volume': {

@@ -279,6 +279,20 @@ class PlayerCoordinator:
         return self._call_default('queue_load', folder)
 
     @plugs.tag
+    def play_next_folder(self, provider=None):
+        return self._call_named(
+            self._content_backend_name(provider),
+            'play_next_folder',
+        )
+
+    @plugs.tag
+    def play_prev_folder(self, provider=None):
+        return self._call_named(
+            self._content_backend_name(provider),
+            'play_prev_folder',
+        )
+
+    @plugs.tag
     def playerstatus(self):
         return self._call_active('playerstatus')
 

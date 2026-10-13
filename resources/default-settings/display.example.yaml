@@ -1,0 +1,6 @@
+display:
+  type: epd2in9b_V3
+  # type: epd2in9b_V4
+  # type: fb_2in8
+  # framebuffer: /dev/fb0
+  # color_format: rgb565  # or rgb888

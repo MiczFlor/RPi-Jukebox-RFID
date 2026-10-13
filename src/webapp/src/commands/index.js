@@ -102,6 +102,16 @@ const commands = {
     plugin: 'ctrl',
     method: 'next',
   },
+  play_next_folder: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'play_next_folder',
+  },
+  play_prev_folder: {
+    _package: 'player',
+    plugin: 'ctrl',
+    method: 'play_prev_folder',
+  },
   toggle: {
     _package: 'player',
     plugin: 'ctrl',

@@ -28,3 +28,6 @@ gpiozero
 
 # MQTT
 paho-mqtt
+
+# Display
+Pillow

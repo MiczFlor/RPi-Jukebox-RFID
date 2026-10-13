@@ -25,6 +25,8 @@ class Mqtt_Commands(Enum):
     PAUSE = "pause"
     NEXT_SONG = "next_song"
     PREV_SONG = "prev_song"
+    PLAY_NEXT_FOLDER = "play_next_folder"
+    PLAY_PREV_FOLDER = "play_prev_folder"
     STOP = "stop"
     REWIND = "rewind"
     SHUFFLE = "shuffle"

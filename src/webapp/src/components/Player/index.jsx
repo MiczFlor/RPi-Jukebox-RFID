@@ -25,34 +25,59 @@ const Player = () => {
 
   const { show_covers } = settings;
 
+  const retryFetchAfterMs = 1000;
+  const retryFetchMaxAttempts = 5;
+
   useEffect(() => {
-    const getCoverArt = async () => {
+    let retryTimer = null;
+    let cancelled = false;
+
+    const applyCover = (cover) => {
+      if (cancelled) return;
+
+      if (cover) {
+        setCoverImage(cover);
+        setBackgroundImage([
+          'linear-gradient(to bottom, rgba(18, 18, 18, 0.5), rgba(18, 18, 18, 1))', `url(${cover})`
+        ].join(','));
+      } else {
+        setCoverImage(undefined);
+        setBackgroundImage('none');
+      }
+    };
+
+    const fetchCover = async (attempt = 0) => {
       const { result } = await request('getSingleCoverArt', {
         song_url: file,
         provider,
       });
-      if (result) {
+
+      if (cancelled) return;
+
+      if (result && result !== 'CACHE_PENDING') {
         const cover = result.startsWith('http') ? result : `/cover-cache/${result}`;
-        setCoverImage(cover);
-        setBackgroundImage([
-          'linear-gradient(to bottom, rgba(18, 18, 18, 0.5), rgba(18, 18, 18, 1))',
-          `url(${cover})`
-        ].join(','));
-      };
+        applyCover(cover);
+      } else if (result === 'CACHE_PENDING' && attempt < retryFetchMaxAttempts) {        
+        retryTimer = setTimeout(() => fetchCover(attempt + 1), retryFetchAfterMs);
+      } else {        
+        applyCover(undefined);
+      }
+    };
+
+    applyCover(undefined);
+
+    if (cover_url && show_covers) {
+      applyCover(cover_url);
+    } else if (file && show_covers) {
+      fetchCover();
     }
 
-    setCoverImage(undefined);
-    setBackgroundImage('none');
-    if (cover_url && show_covers) {
-      setCoverImage(cover_url);
-      setBackgroundImage([
-        'linear-gradient(to bottom, rgba(18, 18, 18, 0.5), rgba(18, 18, 18, 1))',
-        `url(${cover_url})`
-      ].join(','));
-    }
-    else if (file && show_covers) {
-      getCoverArt();
-    }
+    return () => {
+      cancelled = true;
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
+    };
   }, [cover_url, file, provider, show_covers]);
 
   return (
